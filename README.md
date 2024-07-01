@@ -17,7 +17,9 @@ in the grid in an efficient way.
 
 For example, the union of several rectangles.
 
-<img src="example_2d.png" width="300" height="250" alt="2D example">
+<img
+src="https://raw.githubusercontent.com/daveisagit/blocksets/main/example_2d.png"
+width="300" height="250" alt="2D example">
 
 Sure, at this scale we can simply model it as a set of point tuples to represent
 each pixel, but as the resolution increases with respect to the rectangle sizes
