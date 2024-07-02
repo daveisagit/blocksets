@@ -1,19 +1,10 @@
 """Tests for the BlockSet class"""
 
-from itertools import permutations, product
 import pytest
 
 from blocksets.classes.block import Block
 from blocksets.classes.blockset import BlockSet, OperationType
 from blocksets.classes.exceptions import DimensionMismatchError, InvalidDimensionsError
-from block_data import (
-    blocks_1D_all_arrangements_of_2,
-    blocks_1D_all_arrangements_of_3,
-    blocks_1D_arbitrary_set_1,
-    blocks_2D_all_arrangements_of_2,
-    blocks_2D_arbitrary_set_example,
-)
-from util import apply_to_block_set, apply_to_tuple_set, block_set_to_tuple_set
 
 
 def test_construction():
@@ -41,6 +32,23 @@ def test_dimensions():
     assert bs.dimensions == 2
     bs.clear()
     assert bs.dimensions is None
+
+
+def test_empty():
+    bs = BlockSet()
+    assert bs.empty
+    blk = Block((1, 1))
+    bs.add(blk)
+    assert not bs.empty
+    assert bs
+    bs.toggle(blk)
+    assert bs.empty
+
+    bs.add(blk)
+    bs.add(blk)
+    bs.remove(blk)
+    assert bs.empty
+    assert not bs
 
 
 def test_add():

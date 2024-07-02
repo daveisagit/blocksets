@@ -15,6 +15,10 @@ class DimensionMismatchError(BlockError):
     default_message = "Block arguments must be of same dimension."
 
 
+class ExpectedBlockSetError(BlockError):
+    default_message = "Expected a BlockSet argument."
+
+
 class InvalidDimensionsError(BlockError):
     default_message = "Dimensions must be an integer >= 1."
 

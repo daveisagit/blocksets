@@ -12,10 +12,7 @@ amount of space).
 
 ## Examples
 
-Imagine a 2D grid of lattice points. We would like to model a subset of pixels
-in the grid in an efficient way.
-
-For example, the union of several rectangles.
+Say we would like to model a set of pixels in a 2D grid as a union of several rectangles.
 
 <img
 src="https://raw.githubusercontent.com/daveisagit/blocksets/main/example_2d.png"
@@ -90,7 +87,7 @@ this normalised representation after passing the following validations:
 - Ordinates in corresponding dimensions can not be the same value _(as that
   would imply a block of zero space)_.
 
-##### Single Argument to the Constructor
+#### Single Argument to the Constructor
 
 If the second argument (for the opposite end/corner) is not supplied then it is
 defaulted as follows for each ordinate in turn:
@@ -101,8 +98,8 @@ defaulted as follows for each ordinate in turn:
 _So for example if all values are finite then it is a single point (or unit
 block)._
 
-Having it a normalised form we can easily _hash_ and compare for equality using
-a pair of coordinate tuples.
+Expressing them in a normalised form like this means we can easily _hash_ and
+compare for equality using just the pair of coordinate tuples.
 
 #### Block Operations
 
@@ -153,8 +150,9 @@ representation in terms of the **Block**s used to represent the space.
 Methods and operators mirror those of the native set class
 
 - Modify the content (add, remove, toggle)
-- Compare (equality, subset, superset)
-- Compare operations (intersection, union, difference)
+- Set comparisons (equality, subset, superset)
+- Set operations (intersection, union, difference, symmetric_difference)
+- In place set operations (intersection_update, update, difference_update, symmetric_difference_update)
 
 #### Normalisation
 
@@ -169,25 +167,21 @@ are advised to group together modification calls as much as possible in order to
 minimise the amount of normalising required and especially so if performance is
 of a significant concern.
 
-## The Grid
+## Design Approach
 
-The concept under pinning the optimisation is to create a grid specific to the
-set that is defined by when cross-sections change on a given dimension.
+Since _Normalisation_ is more optimal when batched it makes sense to stack the
+blocks being added or removed as layers so we only normalise the set when required.
 
-### Global vs Local
+This also gives us options for potentially giving blocks a value and performing
+some other arithmetic (other than boolean) with them.
 
-Global is useful for quickly finding all the blocks another block is touching or
-intersecting but may mean that a large isolated block is divided up when it
-could be left as is. Local would optimize the lesser number of blocks if they
-are isolated but may introduce complexity and potentially an inconsistency in
-representation
+The main idea is to create a grid specific to the set based on only the relevant
+ordinates and then recursively (by dimension) look for changes in cross-sections
+at those relevant points.
 
-### Optimisation
-
-Considerations
-
-- Aim to sort the grid markers in every dimension and search them in a binary
-  fashion for log(N) complexity.
+Each recursive call returns a normalised set of blocks for the lower cross-section
+dimension. This allows for the detection of changes and removal of redundant blocks
+in a consistent fashion.
 
 ### Local Grid System
 
@@ -202,20 +196,22 @@ refreshing the representation of the local system.
 systems and so we will not consider this for v1. We may look at again if there
 are meaningful use cases for it.
 
-#### Storage
+### Optimisation
 
-Storing block data as a Block object has an overhead of 472 bytes for garbage
-collection. Within a LGS object block we have the option of storing the
-definition as the normalised tuple if we wish to save on that. However, we may
-want to store the reference to a block against a grid marker in which the object
-reference is better suited.
+#### Complexity
 
-## TODO - Reminders
+N = Number of block operation layers to normalise
 
-- [x] Normalisation
-- [x] 3D tests
-- [ ] BlockSet operations Union / Intersection / Difference
-- [ ] PyPI registration
+- Establish the grid markers in each dimension and map their ordinates to
+  markers using a binary search. NLog(N)
+- Create a cross section for each marker in each dimension. (2N^2)^d at worse
+
+#### Memory
+
+Storing block data as a Block object has an overhead of 472 bytes per block
+object (for garbage collection). Although it is unlikely to impact we may be
+inclined to prefer a simple tuple to a block when it comes to modelling any
+transient structures.
 
 ## Testing Strategy
 
@@ -223,8 +219,9 @@ reference is better suited.
 - 3 block operations seems like a good balance (between cognition and coverage)
 - Apply all possible combinations of order and operation for a group of 3 using
   some base set
-- Compare to result as obtained by similar set operations on tuples from the
-  lattice
+- Duplicate the test cases using sets of tuple points. Since we are confident
+  they produce the correct result we can compare them to the results obtained by
+  the BlockSet methods.
 
 ## More Ideas
 
@@ -237,3 +234,10 @@ arithmetical type functions like say `.sub()` , remove meaning zeroise.
 - No third party packages are required (hence no requirements.txt) except pytest
   for testing
 - Install pytest into your venv using `pip install pytest`
+- At the moment it is early days so whilst the foundations are forming I am only
+  inviting comments which can be given via github issues
+
+## TODO - Reminders
+
+- [ ] BlockSet operations Union / Intersection / Difference
+- [ ] Example use in README

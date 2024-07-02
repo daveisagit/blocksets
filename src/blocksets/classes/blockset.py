@@ -1,9 +1,13 @@
 """All code relating to the Blockset class"""
 
 from bisect import bisect_left
+from copy import copy, deepcopy
 from enum import Enum
+from typing import Self
 from blocksets.classes.block import Block
 from blocksets.classes.exceptions import (
+    DimensionMismatchError,
+    ExpectedBlockSetError,
     InvalidDimensionsError,
 )
 
@@ -82,6 +86,16 @@ class BlockSet:
         return None
 
     @property
+    def empty(self) -> bool:
+        """Returns True if empty
+
+        Returns:
+            bool: True if empty
+        """
+        self.normalise()
+        return not bool(self._operation_stack)
+
+    @property
     def normalised(self) -> bool:
         """Return the normalisation state
 
@@ -147,7 +161,10 @@ class BlockSet:
 
         # replace the operation stack with ADD operations for the normalised result
         self._operation_stack = [
-            (OperationType.ADD, (markers_to_ordinates(a), (markers_to_ordinates(b))))
+            (
+                OperationType.ADD,
+                Block(markers_to_ordinates(a), (markers_to_ordinates(b))),
+            )
             for a, b in normalised_markers
         ]
 
@@ -163,7 +180,7 @@ class BlockSet:
 
         # after normalisation we have only add operations on disjoint blocks
         for _, blk in self._operation_stack:
-            yield Block(*blk)
+            yield blk
 
     def block_tuples(self):
         """Generator for all the disjoint blocks after normalising
@@ -175,7 +192,217 @@ class BlockSet:
 
         # after normalisation we have only add operations on disjoint blocks
         for _, blk in self._operation_stack:
-            yield blk
+            yield blk.norm
+
+    def __bool__(self) -> bool:
+        return not self.empty
+
+    def __eq__(self, value: object) -> bool:
+        self._validate_operation_argument(value)
+        # leverage python set equals operation
+        value_set = set(value.blocks())
+        self_set = set(self.blocks())
+        return self_set == value_set
+
+    def __and__(self, value: object) -> Self:
+        return self.intersection(value)
+
+    def __or__(self, value: object) -> Self:
+        return self.union(value)
+
+    def __iand__(self, value: object) -> Self:
+        return self.intersection_update(value)
+
+    def __ior__(self, value: object) -> Self:
+        return self.update(value)
+
+    def __ixor__(self, value: object) -> Self:
+        return self.symmetric_difference_update(value)
+
+    def __sub__(self, value: object) -> Self:
+        return self.difference(value)
+
+    def __xor__(self, value: object) -> Self:
+        return self.symmetric_difference(value)
+
+    def _validate_operation_argument(self, a):
+        """Validates the supplied argument
+
+        Args:
+            a: Expected block set
+
+        Raises:
+            ExpectedBlockSetError: If not a BlockSet object
+            DimensionMismatchError: If of different dimension
+        """
+        if not isinstance(a, BlockSet):
+            raise ExpectedBlockSetError()
+        if a.dimensions != self.dimensions:
+            raise DimensionMismatchError()
+
+    def union(self, other: Self) -> Self:
+        """Return a new block set representing a union with another
+        There is no need to normalise self or the result as we are simply
+        adding further ADD operations. But this does mean the other block
+        set will become normalised upon iterating over the blocks.
+
+        Args:
+            other (BlockSet): The BlockSet to union with
+
+        Raises:
+            ExpectedBlockSetError: If not given a BlockSet for other
+
+        Returns:
+            BlockSet: self ∪ other
+        """
+        self._validate_operation_argument(other)
+
+        # we are not looking to update this block set so we take a copy
+        # of self as the starting point for building the result
+        result = deepcopy(self)
+        for blk in other.blocks():
+            result.add(blk)
+        return result
+
+    def intersection(self, other: Self) -> Self:
+        """Return a new block set representing the intersection with another.
+        The result is achieved by taking a copy of self, removing the other
+        and then toggling the original self.
+
+        Args:
+            other (BlockSet): The BlockSet to intersect with
+
+        Returns:
+            BlockSet: self ∩ other
+        """
+        self._validate_operation_argument(other)
+        # we are not looking to update this block set so we take a copy
+        # of self as the starting point for building the result
+        result = deepcopy(self)
+        result.normalise()
+        self_blocks = set(result.blocks())
+        other.normalise()
+
+        for blk in other.blocks():
+            result.remove(blk)
+
+        for blk in self_blocks:
+            result.toggle(blk)
+
+        result.normalise()
+        return result
+
+    def difference(self, other: Self) -> Self:
+        """Return a new block set representing self - other
+        There is no need to normalise self or the result as we are simply
+        adding further REMOVE operations. But this does mean the other block
+        set will become normalised upon iterating over the blocks.
+
+        Args:
+            other (BlockSet): The BlockSet being removed
+
+        Raises:
+            ExpectedBlockSetError: If not given a BlockSet for other
+
+        Returns:
+            BlockSet: self - other
+        """
+        self._validate_operation_argument(other)
+        # we are not looking to update this block set so we take a copy
+        # of self as the starting point for building the result
+        result = deepcopy(self)
+        for blk in other.blocks():
+            result.remove(blk)
+        return result
+
+    def symmetric_difference(self, other: Self) -> Self:
+        """Return a new block set representing self ⊕ other (xor)
+        We should normalise the copy of self first as we over laying
+        further TOGGLE operations.
+
+        Args:
+            other (BlockSet): The BlockSet being XOR'd
+
+        Raises:
+            ExpectedBlockSetError: If not given a BlockSet for other
+
+        Returns:
+            BlockSet: self ⊕ other
+        """
+        self._validate_operation_argument(other)
+        # we are not looking to update this block set so we take a copy
+        # of self as the starting point for building the result
+        result = deepcopy(self)
+        result.normalise()
+        for blk in other.blocks():
+            result.toggle(blk)
+        return result
+
+    def update(self, other: Self) -> Self:
+        """Update this block set with another Effectively applying the union to self
+
+        Args:
+            other (BlockSet): The BlockSet being added
+
+        Returns:
+            BlockSet: self
+        """
+        self._validate_operation_argument(other)
+        for blk in other.blocks():
+            self.add(blk)
+        return self
+
+    def intersection_update(self, other: Self) -> Self:
+        """Remove space from self not in other
+        Because of the way we do intersection it makes sense to leverage
+        the intersection method and effectively copy the resulting stack
+
+        Args:
+            other (BlockSet): The intersecting BlockSet
+
+        Returns:
+            BlockSet: self
+        """
+        self._validate_operation_argument(other)
+        result = self.intersection(other)
+        self._operation_stack = result._operation_stack
+        self._normalised = result._normalised
+        return self
+
+    def difference_update(self, other: Self) -> Self:
+        """Remove other from self.
+
+        Args:
+            other (BlockSet): The BlockSet being removed
+
+        Raises:
+            ExpectedBlockSetError: If not given a BlockSet for other
+
+        Returns:
+            BlockSet: self
+        """
+        self._validate_operation_argument(other)
+        for blk in other.blocks():
+            self.remove(blk)
+        return self
+
+    def symmetric_difference_update(self, other: Self) -> Self:
+        """Adds the symmetric differences between self and other
+
+        Args:
+            other (BlockSet): The differing BlockSet
+
+        Raises:
+            ExpectedBlockSetError: If not given a BlockSet for other
+
+        Returns:
+            BlockSet: self
+        """
+        self._validate_operation_argument(other)
+        self.normalise()
+        for blk in other.blocks():
+            self.toggle(blk)
+        return self
 
     def _refresh_marker_ordinates(self):
         """Refreshes _marker_ordinates which stores actual ordinate values of

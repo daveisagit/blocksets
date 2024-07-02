@@ -46,6 +46,7 @@ def apply_to_block_set(block_set: BlockSet, op_type: OperationType, block: Block
 
 def block_set_to_tuple_set(bs: BlockSet) -> set:
     """Covert a BlockSet to a set of tuple points
+    and assert that the make-up of Blocks are disjoint
 
     Args:
         bs (BlockSet): A given BlockSet object
@@ -55,7 +56,9 @@ def block_set_to_tuple_set(bs: BlockSet) -> set:
     """
     tuple_set = set()
     for b in bs.blocks():
-        tuple_set.update(b.lattice())
+        bs = set(b.lattice())
+        assert tuple_set & bs == set()
+        tuple_set.update(bs)
     return tuple_set
 
 
