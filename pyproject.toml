@@ -10,9 +10,9 @@ authors = [
 ]
 description = "A Python package for efficiently computing blocks of discrete space."
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 license = {file = "LICENSE.md"}
-keywords = ["intervals", "lattice", "sets", "pixels"]
+keywords = ["intervals", "lattice", "sets", "pixels", "points", "dimension", "ranges", "orthogonal", "space", "grid"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
