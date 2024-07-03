@@ -210,6 +210,12 @@ class BlockSet:
     def __or__(self, value: object) -> Self:
         return self.union(value)
 
+    def __ge__(self, value: object) -> Self:
+        return self.issuperset(value)
+
+    def __gt__(self, value: object) -> Self:
+        return self.issuperset(value) and self != value
+
     def __iand__(self, value: object) -> Self:
         return self.intersection_update(value)
 
@@ -218,6 +224,12 @@ class BlockSet:
 
     def __ixor__(self, value: object) -> Self:
         return self.symmetric_difference_update(value)
+
+    def __le__(self, value: object) -> Self:
+        return self.issubset(value)
+
+    def __lt__(self, value: object) -> Self:
+        return self.issubset(value) and self != value
 
     def __sub__(self, value: object) -> Self:
         return self.difference(value)
@@ -403,6 +415,60 @@ class BlockSet:
         for blk in other.blocks():
             self.toggle(blk)
         return self
+
+    def isdisjoint(self, other: Self) -> bool:
+        """Returns True the block sets are completely disjoint from each other
+
+        Args:
+            other (BlockSet): Compare to
+
+        Returns:
+            bool: True if there is no overlapping space
+        """
+        self._validate_operation_argument(other)
+        self.normalise()
+        other.normalise()
+        # 2 possible approaches
+        # a) Get the intersection, return True if empty
+        # b) Compare the cross product of blocks
+        # Under which cases/circumstances one out performs the other
+        # can be explored, for now we'll go with reuse of intersection
+        result = self & other
+        return result.empty
+
+    def issubset(self, other: Self) -> bool:
+        """Returns True if self is a subset of other
+
+        Args:
+            other (BlockSet): Compare to
+
+        Returns:
+            bool: True if self is a subset of other
+        """
+        self._validate_operation_argument(other)
+        self.normalise()
+        other.normalise()
+        # Either union = other or intersection = self
+        # for now union = other seems the most simple
+        result = self | other
+        return result == other
+
+    def issuperset(self, other: Self) -> bool:
+        """Returns True if self is a superset of other
+
+        Args:
+            other (BlockSet): Compare to
+
+        Returns:
+            bool: True if self is a superset of other
+        """
+        self._validate_operation_argument(other)
+        self.normalise()
+        other.normalise()
+        # Either union = self or intersection = other
+        # for now union = self seems the most simple
+        result = self | other
+        return result == self
 
     def _refresh_marker_ordinates(self):
         """Refreshes _marker_ordinates which stores actual ordinate values of

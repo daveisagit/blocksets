@@ -12,12 +12,15 @@ from blocksets.classes.blockset import BlockSet
 """
 A    ----      ------
 B      ----  ----  ----
+C         -----      ---       
+D         ----        --
 
 AuB  ------  ----------
 AnB    --      --  -- 
 A-B  --          --
 B-A      --  --      --
 AxB  --  --  --  --  -- (symmetric difference i.e. xor)
+
 """
 
 
@@ -42,6 +45,22 @@ def d1_B():
     bs.add(Block(2, 18))
     bs.remove(Block(6, 8))
     bs.remove(Block(12, 14))
+    return bs
+
+
+@pytest.fixture()
+def d1_C():
+    bs = BlockSet(1)
+    bs.add(Block(5, 10))
+    bs.add(Block(16, 19))
+    return bs
+
+
+@pytest.fixture()
+def d1_D():
+    bs = BlockSet(1)
+    bs.add(Block(5, 9))
+    bs.add(Block(17, 19))
     return bs
 
 

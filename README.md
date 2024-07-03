@@ -150,7 +150,7 @@ representation in terms of the **Block**s used to represent the space.
 Methods and operators mirror those of the native set class
 
 - Modify the content (add, remove, toggle)
-- Set comparisons (equality, subset, superset)
+- Set comparisons (equality, subset, superset, disjoint)
 - Set operations (intersection, union, difference, symmetric_difference)
 - In place set operations (intersection_update, update, difference_update, symmetric_difference_update)
 

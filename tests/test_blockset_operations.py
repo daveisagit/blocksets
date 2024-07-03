@@ -143,3 +143,51 @@ def test_symmetric_difference_update_1D(d1_A, d1_B, d1_AxB, d1_empty):
 
     copy_A ^= copy_B
     assert copy_A == d1_AxB
+
+
+def test_isdisjoint_1D(d1_A, d1_B, d1_C):
+    copy_A = deepcopy(d1_A)
+    copy_C = deepcopy(d1_C)
+    assert d1_A.isdisjoint(d1_C)
+    assert d1_C.isdisjoint(d1_A)
+    assert d1_A == copy_A
+    assert d1_C == copy_C
+    assert not d1_A.isdisjoint(d1_B)
+
+
+def test_issubset_1D(d1_A, d1_C, d1_D):
+    copy_C = deepcopy(d1_C)
+    copy_D = deepcopy(d1_D)
+    assert d1_C.issubset(d1_C)
+    assert d1_D.issubset(d1_D)
+    assert d1_D.issubset(d1_C)
+    assert not d1_C.issubset(d1_A)
+
+    assert d1_D <= d1_C
+    assert d1_C <= d1_C
+    assert not d1_C <= d1_A
+
+    assert d1_C == copy_C
+    assert d1_D == copy_D
+
+    assert d1_D < d1_C
+    assert not d1_C < d1_C
+
+
+def test_issuperset_1D(d1_A, d1_C, d1_D):
+    copy_C = deepcopy(d1_C)
+    copy_D = deepcopy(d1_D)
+    assert d1_C.issuperset(d1_C)
+    assert d1_D.issuperset(d1_D)
+    assert d1_C.issuperset(d1_D)
+    assert not d1_C.issubset(d1_A)
+
+    assert d1_C >= d1_D
+    assert d1_C >= d1_C
+    assert not d1_C >= d1_A
+
+    assert d1_C == copy_C
+    assert d1_D == copy_D
+
+    assert d1_C > d1_D
+    assert not d1_C > d1_C
