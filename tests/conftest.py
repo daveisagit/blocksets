@@ -124,3 +124,73 @@ def d2_empty():
     bs = BlockSet(2)
     assert bs.empty
     return bs
+
+
+"""
+Various patterns over 10 x 5
+
+A                B             C 
+---------------------------------------------------------
+xxxxxxxxxx       xxxxxxxxxx
+xxxxxxxxxx       xxxxxxxxxx
+  xx  xx         xx            xx  xx  xx
+  xx  xx         xx            xx  xx  xx
+  xx  xx         xx            xx  xx  xx
+
+F = Full (10x5) fill
+
+AuC = F
+BnC = (0,0)..(2,3)
+A-B = (2,0)..(4,3) & (6,0)..(8,3)
+B-A = (0,0)..(2,3) = BnC
+AxC = F
+
+"""
+
+
+@pytest.fixture()
+def d2_A():
+    bs = BlockSet(2)
+    bs.add(Block((0, 3), (10, 5)))
+    bs.add(Block((2, 0), (4, 5)))
+    bs.add(Block((6, 0), (8, 5)))
+    return bs
+
+
+@pytest.fixture()
+def d2_B():
+    bs = BlockSet(2)
+    bs.add(Block((0, 0), (10, 5)))
+    bs.remove(Block((2, 0), (10, 3)))
+    return bs
+
+
+@pytest.fixture()
+def d2_C():
+    bs = BlockSet(2)
+    bs.add(Block((0, 0), (2, 3)))
+    bs.add(Block((4, 0), (6, 3)))
+    bs.add(Block((8, 0), (10, 3)))
+    return bs
+
+
+@pytest.fixture()
+def d2_F():
+    bs = BlockSet(2)
+    bs.add(Block((0, 0), (10, 5)))
+    return bs
+
+
+@pytest.fixture()
+def d2_BnC():
+    bs = BlockSet(2)
+    bs.add(Block((0, 0), (2, 3)))
+    return bs
+
+
+@pytest.fixture()
+def d2_AmB():
+    bs = BlockSet(2)
+    bs.add(Block((2, 0), (4, 3)))
+    bs.add(Block((6, 0), (8, 3)))
+    return bs

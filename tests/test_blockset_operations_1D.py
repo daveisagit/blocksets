@@ -1,4 +1,4 @@
-"""Tests for the BlockSet class with a focus on the set operations"""
+"""Tests for 1 dimensional set operations on the BlockSet class"""
 
 from copy import deepcopy
 import pytest
