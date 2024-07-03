@@ -10,7 +10,7 @@ integer grids in 2 or 3 dimensions and where modelling the data as sets of
 tuples is not practical because of the volume (i.e. lots of points over a large
 amount of space).
 
-## Examples
+## For Example
 
 Say we would like to model a set of pixels in a 2D grid as a union of several rectangles.
 
@@ -45,6 +45,38 @@ model any layout as a set of _blocks_ instead of _tuples_.
 - Iteration over a finite block yields tuples.
 
 _Let the exploration begin ..._
+
+## Installation
+
+`pip install blocksets`
+
+There are no dependent packages
+
+## Example Use
+
+It's worth reviewing and running the `example_use.py` module, but here's a taste
+
+```python
+from blocksets import Block, BlockSet
+
+big_rubik = Block((0, 0, 0), (99999, 99999, 99999))
+assert big_rubik.measure == 999970000299999
+centre_cube = Block((49999, 49999, 49999))
+assert centre_cube.measure == 1
+
+# Creates a large 3 dimensional cube with the centre missing
+bs = BlockSet(3)  
+bs.add(big_rubik)
+bs.remove(centre_cube)
+
+assert bs.point_count == 999970000299998
+assert bs.block_count == 6
+
+sorted_blocks = sorted(bs.blocks(), key=lambda x: x.norm)
+
+for blk in sorted_blocks:
+    print(f"{blk:50} {blk.measure}")
+```
 
 ## Classes
 

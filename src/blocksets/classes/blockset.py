@@ -104,6 +104,29 @@ class BlockSet:
         """
         return self._normalised
 
+    @property
+    def block_count(self) -> int:
+        """Returns the number of block operations on the stack.
+        After normalisation this is simply the number of blocks
+
+        Returns:
+            int: block count
+        """
+        self.normalise()
+        return len(self._operation_stack)
+
+    @property
+    def point_count(self) -> int:
+        """Returns the total amount of space the block set is taking up.
+        This is effectively the sum of all the disjoint block measures after
+        normalisation.
+
+        Returns:
+            int: point count
+        """
+        self.normalise()
+        return sum(blk.measure for blk in self.blocks())
+
     def add(self, blk: Block):
         """Append an add block operation to the stack
 
