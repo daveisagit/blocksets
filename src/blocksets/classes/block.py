@@ -363,6 +363,9 @@ class Block:
             return f"{str(self.a[0])}..{str(self.b[0])}"
         return f"{str(self.a)}..{str(self.b)}"
 
+    def __format__(self, format_spec) -> str:
+        return format(str(self), format_spec)
+
     def in_contact_with(self, other: object) -> bool:
         """Return True if this block touches the other in any way (vertex, edge, face etc.)
         or overlaps it.

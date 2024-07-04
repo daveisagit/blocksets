@@ -260,6 +260,12 @@ class BlockSet:
     def __xor__(self, value: object) -> Self:
         return self.symmetric_difference(value)
 
+    def __str__(self) -> str:
+        return f"BlockSet: {self.block_count} Blocks, {self.point_count} Points"
+
+    def __format__(self, format_spec) -> str:
+        return format(str(self), format_spec)
+
     def _validate_operation_argument(self, a):
         """Validates the supplied argument
 

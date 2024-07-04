@@ -2,7 +2,7 @@ from blocksets import Block, BlockSet
 
 
 def draw_layout(bs: BlockSet):
-    """Some simple code to visualise a small blockset"""
+    """Some simple code to visualise a small blockset in a 10x10 grid"""
     points = set()
     for b in bs.blocks():
         points.update(b.lattice())
@@ -60,7 +60,7 @@ assert face <= head  # subset
 
 print()
 print("Efficiently modelling a large volume with a single exception")
-print("e.g. Rubik's on rails (99999 x 99999 x 99999)")
+print("e.g. Rubik on rails (99999 x 99999 x 99999)")
 print()
 big_rubik = Block((0, 0, 0), (99999, 99999, 99999))
 centre_cube = Block((49999, 49999, 49999))
@@ -71,7 +71,10 @@ bs.remove(centre_cube)
 
 print(f"Total volume less 1 central cube: {bs.point_count}")
 print(f"Number of Blocks: {bs.block_count}")
+print(bs)
 print("Block make-up")
-print(f"Idx          Point Count    Block location coordinates")
-for i, blk in enumerate(bs.blocks()):
-    print(f"{i:3} {blk.measure:20}    {blk}")
+
+sorted_blocks = sorted(bs.blocks(), key=lambda x: x.norm)
+
+for blk in sorted_blocks:
+    print(f"{blk:50} {blk.measure}")
