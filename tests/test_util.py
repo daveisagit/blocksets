@@ -100,3 +100,7 @@ def test_generate_test_set_1D():
     # This takes about l.5s to run and adds no value, left for reference.
     # test_set_4 = generate_test_set_1D(4)
     # assert len(test_set_4) == 23917
+
+
+def test_example_use():
+    from blocksets import example_use

@@ -1,7 +1,7 @@
 """All code relating to the Blockset class"""
 
 from bisect import bisect_left
-from copy import copy, deepcopy
+from copy import deepcopy
 from enum import Enum
 from typing import Self
 from blocksets.classes.block import Block
@@ -81,7 +81,6 @@ class BlockSet:
             _, block = self._operation_stack[0]
             if isinstance(block, Block):
                 return block.dimensions
-            return len(block[0])
 
         return None
 
@@ -534,23 +533,6 @@ class BlockSet:
             marker_stack (list): The marker stack to resolve
         """
 
-        def cross_section_changed():
-            """Whenever a cross section changes we need to construct
-            blocks that reflect the previous cross section for this marker and
-            add them to our normalised set in this dimension.
-
-            This could happen called during the iteration over the grid markers
-            or after leaving that loop, so we scope to a function for dryness"""
-
-            if change_marker is not None:
-                if last_dimension and prev_normalised_x_sec:
-                    normalised_blocks.add(((change_marker,), (m,)))
-                if not last_dimension:
-                    for x in prev_normalised_x_sec:
-                        a = (change_marker,) + x[0]
-                        b = (m,) + x[1]
-                        normalised_blocks.add((a, b))
-
         # Being in the last dimension is a special case so we note it up front
         last_dimension = False
         if self.dimensions == dimension + 1:
@@ -612,11 +594,17 @@ class BlockSet:
             # By only adding blocks when there are cross section changes
             # we should hopefully remove redundant blocks
             if normalised_x_sec != prev_normalised_x_sec:
-                cross_section_changed()
+
+                if change_marker is not None:
+                    if last_dimension and prev_normalised_x_sec:
+                        normalised_blocks.add(((change_marker,), (m,)))
+                    if not last_dimension:
+                        for x in prev_normalised_x_sec:
+                            a = (change_marker,) + x[0]
+                            b = (m,) + x[1]
+                            normalised_blocks.add((a, b))
+
                 change_marker = m
                 prev_normalised_x_sec = normalised_x_sec
-
-        if normalised_x_sec != prev_normalised_x_sec:
-            cross_section_changed()
 
         return normalised_blocks

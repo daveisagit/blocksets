@@ -1,4 +1,7 @@
-# blocksets
+# Project Description
+
+![PyPI - Version](https://img.shields.io/pypi/v/blocksets)
+![Codecov](https://img.shields.io/codecov/c/github/daveisagit/blocksets)
 
 Python library for efficiently modelling blocks of discrete space.
 
@@ -269,9 +272,9 @@ arithmetical type functions like say `.sub()` , remove meaning zeroise.
   for testing
 - Install pytest into your venv using `pip install pytest`
 - At the moment it is early days so whilst the foundations are forming I am only
-  inviting comments which can be given via github issues
+  inviting comments which can be given via [github issues]([https://](https://github.com/daveisagit/blocksets/issues))
 
 ## TODO - Reminders
 
-- [ ] BlockSet operations Union / Intersection / Difference
-- [ ] Example use in README
+- [x] BlockSet operations Union / Intersection / Difference
+- [x] Example use in README

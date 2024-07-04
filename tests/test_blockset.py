@@ -4,7 +4,10 @@ import pytest
 
 from blocksets.classes.block import Block
 from blocksets.classes.blockset import BlockSet, OperationType
-from blocksets.classes.exceptions import DimensionMismatchError, InvalidDimensionsError
+from blocksets.classes.exceptions import (
+    DimensionMismatchError,
+    InvalidDimensionsError,
+)
 
 
 def test_construction():

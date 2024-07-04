@@ -7,12 +7,18 @@ import pytest
 from math import inf
 from blocksets.classes.block import Block
 from blocksets.classes.exceptions import (
+    BlockError,
     DimensionMismatchError,
     NotAPointError,
     NotFiniteError,
     ValueParsingError,
     ZeroSpaceError,
 )
+
+
+def test_exceptions():
+    with pytest.raises(BlockError):
+        raise BlockError("A specific unexpected error in Block class")
 
 
 def test_standard_object():
@@ -294,6 +300,19 @@ def test_instantiation_1D():
     assert blk.side_lengths == (1,)
     assert blk.measure == 1
     assert blk.manhattan == 1
+
+    blk = Block(-5, 5)
+    assert blk == ((-5,), (5,))
+    assert blk.a == (-5,)
+    assert blk.b == (5,)
+    assert str(blk) == "-5..5"
+    assert not blk.is_a_point
+    assert blk.dimensions == 1
+    assert blk.is_finite
+    assert blk.side_lengths == (10,)
+    assert blk.measure == 10
+    assert blk.manhattan == 10
+    assert repr(blk) == "((-5,), (5,))"
 
 
 def test_instantiation_2D():
@@ -610,6 +629,7 @@ def test_subsets_2D():
     v_strip = Block((-5, -inf), (5, inf))
     h_strip = Block((-inf, -5), (inf, 5))
     offset = Block((-5, -5), (16, 16))
+    disjoint = Block((1000, 1000), (1005, 1005))
 
     assert core >= core
     assert core <= core
@@ -654,6 +674,9 @@ def test_subsets_2D():
 
     assert inner < core < outer
     assert outer > core > inner
+
+    assert not core >= disjoint
+    assert not disjoint >= core
 
 
 def test_contains_operator():

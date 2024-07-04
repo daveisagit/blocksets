@@ -381,7 +381,7 @@ class Block:
 
     def __matmul__(self, other) -> bool:
         """Make use of the @ operator as a shorthand for being in contact with"""
-        return self._in_contact_with(other)
+        return self.in_contact_with(other)
 
     def lattice(self):
         """A generator for all the points in the block
