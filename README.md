@@ -56,7 +56,7 @@ There are no dependent packages
 
 It's worth reviewing and running the `example_use.py` module via
 `python -m blocksets.example_use`
-but, but here's a taste of it for reading purposes
+here's a taste snippet for reading purposes
 
 ```python
 from blocksets import Block, BlockSet
