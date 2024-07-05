@@ -46,6 +46,8 @@ model any layout as a set of _blocks_ instead of _tuples_.
   the same 2D space into rectangles.
 - Iteration over a block set yields blocks.
 - Iteration over a finite block yields tuples.
+- Modelling of an intervals/ranges is similar to a python range in that the lower
+  limit is inclusive and the upper exclusive e.g. 1..4 = {1,2,3}
 
 _Let the exploration begin ..._
 
@@ -59,7 +61,7 @@ There are no dependent packages
 
 It's worth reviewing and running the `example_use.py` module via
 `python -m blocksets.example_use`
-here's a taste snippet for reading purposes
+here's a snippet for taste
 
 ```python
 from blocksets import Block, BlockSet
@@ -81,6 +83,17 @@ sorted_blocks = sorted(bs.blocks(), key=lambda x: x.norm)
 
 for blk in sorted_blocks:
     print(f"{blk:50} {blk.measure}")
+```
+
+printed output
+
+```text
+(0, 0, 0)..(49999, 99999, 99999)                   499980000249999
+(49999, 0, 0)..(50000, 49999, 99999)               4999850001
+(49999, 49999, 0)..(50000, 50000, 49999)           49999
+(49999, 49999, 50000)..(50000, 50000, 99999)       49999
+(49999, 50000, 0)..(50000, 99999, 99999)           4999850001
+(50000, 0, 0)..(99999, 99999, 99999)               499980000249999    
 ```
 
 ## Classes
