@@ -186,10 +186,11 @@ representation in terms of the **Block**s used to represent the space.
 
 Methods and operators mirror those of the native set class
 
-- Modify the content (add, remove, toggle)
+- Content modifiers (add, remove, toggle)
 - Set comparisons (equality, subset, superset, disjoint)
 - Set operations (intersection, union, difference, symmetric_difference)
 - In place set operations (intersection_update, update, difference_update, symmetric_difference_update)
+- Use of the `in` operator will apply to a single **Block** object
 
 #### Normalisation
 
@@ -235,6 +236,10 @@ are meaningful use cases for it.
 
 ### Optimisation
 
+Clearly this approach is only useful if there is a significant saving on
+modelling the granular space. For example if all the normalised disjoint blocks
+are unit blocks then we would be better off using a set of tuples regardless.
+
 #### Complexity
 
 N = Number of block operation layers to normalise
@@ -252,29 +257,46 @@ transient structures.
 
 ## Testing Strategy
 
-- Have a small number of Block fixtures covering overlap possibilities
+- Have a small number of Block fixtures covering the various possibilities
 - 3 block operations seems like a good balance (between cognition and coverage)
 - Apply all possible combinations of order and operation for a group of 3 using
   some base set
 - Duplicate the test cases using sets of tuple points. Since we are confident
   they produce the correct result we can compare them to the results obtained by
   the BlockSet methods.
+- Testing cases with _Open_ intervals will require manually crafted tests as we
+  won't be able to generate an equivalent set of tuple points
 
-## More Ideas
+### Running Tests
 
-Currently we are effectively modelling boolean value on any given point.
-We could extend the notion of a layer to having value introducing more
-arithmetical type functions like say `.sub()` , remove meaning zeroise.
+Install `pytest` if not already
+
+For a coverage report
+
+`pytest --cov=blocksets tests/ --cov-report term-missing`
+
+## Ideas
+
+Currently, we are effectively modelling boolean values at specific points. We
+could extend the notion of a Block Operation (i.e. layer) by say adding _value_
+which may introduce more arithmetic functions like say `.sub()`  (and
+`.remove()` meaning zeroise) etc.
+
+For suggesting further ideas please create a github issue as per the
+contribution guidelines
 
 ## Contribution
 
-- No third party packages are required (hence no requirements.txt) except pytest
-  for testing
-- Install pytest into your venv using `pip install pytest`
 - At the moment it is early days so whilst the foundations are forming I am only
   inviting comments which can be given via [github issues]([https://](https://github.com/daveisagit/blocksets/issues))
 
 ## TODO - Reminders
 
-- [x] BlockSet operations Union / Intersection / Difference
-- [x] Example use in README
+- [ ] Test cases for normalisation using _Open_ intervals
+- [ ] Test cases for set operations using _Open_ intervals
+- [ ] Test cases for set operations in 3D
+- [ ] More systematic test case coverage for set operations
+- [ ] Some performance tests on large operation stacks
+- [ ] Maybe a
+  [Manim]([https://](https://docs.manim.community/en/stable/index.html)) style
+  video explainer?

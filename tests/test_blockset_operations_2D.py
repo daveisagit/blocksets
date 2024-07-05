@@ -1,9 +1,14 @@
 """Tests for 2 dimensional set operations on the BlockSet class"""
 
 from copy import deepcopy
+from math import inf
 import pytest
 
-from blocksets.classes.exceptions import DimensionMismatchError, ExpectedBlockSetError
+from blocksets.classes.exceptions import (
+    DimensionMismatchError,
+    ExpectedBlockSetError,
+    ValueParsingError,
+)
 
 
 def test_union_2D(d2_A, d2_C, d2_F, d2_empty):
@@ -80,3 +85,41 @@ def test_isdisjoint_2D(d2_A, d2_B, d2_C):
     assert d2_A == copy_A
     assert d2_C == copy_C
     assert not d2_A.isdisjoint(d2_B)
+
+
+def test_in_operator_2D(
+    d2_A,
+    d2_B,
+    d2_quad_pp,
+    d2_quad_np,
+    d2_quad_pn,
+    d2_quad_nn,
+    d2_empty,
+    empty_block_set,
+):
+
+    with pytest.raises(DimensionMismatchError):
+        assert not 1 in d2_empty
+
+    with pytest.raises(ValueParsingError):
+        assert d2_A not in d2_B
+
+    assert ((1, 2), (3, 4)) not in d2_empty
+    assert ((1, 2), (3, 4)) not in empty_block_set
+
+    assert ((1, 1), (2, 4)) in d2_B
+    assert ((1, 2), (3, 4)) not in d2_B
+
+    assert ((0, 0), (1, 1)) not in d2_quad_pp
+    assert ((0, 0), (1, 1)) not in d2_quad_pn
+    assert ((0, 0), (1, 1)) not in d2_quad_np
+    assert ((0, 0), (1, 1)) not in d2_quad_nn
+
+    assert ((0, -inf), (1, inf)) not in d2_quad_nn
+    assert ((0, -inf), (1, inf)) not in d2_quad_pn
+    assert ((0, -inf), (1, inf)) not in d2_quad_np
+    assert ((0, -inf), (1, inf)) not in d2_quad_nn
+
+    AuB = d2_A | d2_B
+    assert ((0, 0), (4, 5)) in AuB
+    assert ((2, 2), (5, 4)) not in AuB

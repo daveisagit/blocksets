@@ -1,9 +1,14 @@
 """Tests for 1 dimensional set operations on the BlockSet class"""
 
 from copy import deepcopy
+from math import inf
 import pytest
 
-from blocksets.classes.exceptions import DimensionMismatchError, ExpectedBlockSetError
+from blocksets.classes.exceptions import (
+    DimensionMismatchError,
+    ExpectedBlockSetError,
+    ValueParsingError,
+)
 
 
 def test_argument_validation(d1_A, d2_empty):
@@ -191,3 +196,36 @@ def test_issuperset_1D(d1_A, d1_C, d1_D):
 
     assert d1_C > d1_D
     assert not d1_C > d1_C
+
+
+def test_in_operator_1D(
+    d1_B, d1_negatives, d1_positives, d1_empty, d2_origin, empty_block_set
+):
+
+    with pytest.raises(DimensionMismatchError):
+        assert not d2_origin in d1_empty
+
+    with pytest.raises(ValueParsingError):
+        assert d1_B in d1_positives
+
+    assert not 1 in d1_empty
+    assert not 1 in empty_block_set
+
+    assert 5 in d1_B
+    assert 7 not in d1_B
+    assert inf not in d1_B
+    assert (2, 6) in d1_B
+    assert (1, 6) not in d1_B
+
+    assert (1000, 2000) in d1_positives
+    assert -5000 in d1_negatives
+    assert (5, inf) in d1_positives
+    assert (-inf, -5) in d1_negatives
+
+    assert -inf not in d1_positives
+    assert inf not in d1_negatives
+    assert inf not in d1_positives
+    assert -inf not in d1_negatives
+
+    assert 0 not in d1_negatives
+    assert 0 not in d1_positives

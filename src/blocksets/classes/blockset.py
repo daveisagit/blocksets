@@ -219,6 +219,15 @@ class BlockSet:
     def __bool__(self) -> bool:
         return not self.empty
 
+    def __contains__(self, item) -> bool:
+        if self.dimensions is None:
+            return False
+        else:
+            item = Block.parse_to_dimension(self.dimensions, item)
+        temp_bs = BlockSet(self.dimensions)
+        temp_bs.add(item)
+        return temp_bs <= self
+
     def __eq__(self, value: object) -> bool:
         self._validate_operation_argument(value)
         # leverage python set equals operation

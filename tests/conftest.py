@@ -1,8 +1,17 @@
 """Fixtures"""
 
+from math import inf
 import pytest
 from blocksets.classes.block import Block
 from blocksets.classes.blockset import BlockSet
+
+
+@pytest.fixture()
+def empty_block_set():
+    bs = BlockSet()
+    assert bs.empty
+    return bs
+
 
 #
 # 1 - Dimensional Block Set Fixtures
@@ -114,6 +123,20 @@ def d1_AxB():
     return bs
 
 
+@pytest.fixture()
+def d1_negatives():
+    bs = BlockSet(1)
+    bs.add(Block(-inf, 0))
+    return bs
+
+
+@pytest.fixture()
+def d1_positives():
+    bs = BlockSet(1)
+    bs.add(Block(1, inf))
+    return bs
+
+
 #
 # 2 - Dimensional Block Set Fixtures
 #
@@ -194,3 +217,39 @@ def d2_AmB():
     bs.add(Block((2, 0), (4, 3)))
     bs.add(Block((6, 0), (8, 3)))
     return bs
+
+
+# 4 quadrants excluding zeros (i.e. the axes)
+
+
+@pytest.fixture()
+def d2_quad_pp():
+    bs = BlockSet(2)
+    bs.add(Block((1, 1), (inf, inf)))
+    return bs
+
+
+@pytest.fixture()
+def d2_quad_np():
+    bs = BlockSet(2)
+    bs.add(Block((-inf, 1), (0, inf)))
+    return bs
+
+
+@pytest.fixture()
+def d2_quad_nn():
+    bs = BlockSet(2)
+    bs.add(Block((-inf, -inf), (0, 0)))
+    return bs
+
+
+@pytest.fixture()
+def d2_quad_pn():
+    bs = BlockSet(2)
+    bs.add(Block((1, -inf), (inf, 0)))
+    return bs
+
+
+@pytest.fixture()
+def d2_origin():
+    return Block((0, 0))
