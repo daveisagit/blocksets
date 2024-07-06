@@ -8,8 +8,8 @@ from blocksets import Block, BlockSet
 def draw_layout(bs: BlockSet):
     """Some simple code to visualise a small blockset in a 10x10 grid"""
     points = set()
-    for b in bs.blocks():
-        points.update(b.lattice())
+    for b in bs:
+        points.update(set(b))
 
     print()
     print(bs)
@@ -86,7 +86,7 @@ print(f"Number of Blocks: {bs.block_count}")
 print(bs)
 print("Block make-up")
 
-sorted_blocks = sorted(bs.blocks(), key=lambda x: x.norm)
+sorted_blocks = sorted(bs, key=lambda x: x.norm)
 for blk in sorted_blocks:
     print(f"{blk:50} {blk.measure}")
 

@@ -323,7 +323,7 @@ class Block:
     def __le__(self, value: object) -> bool:
         value = self.parse_to_dimension(self.dimensions, value)
         i = self._intersection(value)
-        if i:
+        if i is not None:
             return self.norm == i.norm
         return False
 
@@ -335,7 +335,7 @@ class Block:
     def __ge__(self, value: object) -> bool:
         value = self.parse_to_dimension(self.dimensions, value)
         i = self._intersection(value)
-        if i:
+        if i is not None:
             return value.norm == i.norm
         return False
 
@@ -383,7 +383,17 @@ class Block:
         """Make use of the @ operator as a shorthand for being in contact with"""
         return self.in_contact_with(other)
 
-    def lattice(self):
+    def __bool__(self):
+        return True
+
+    def __iter__(self):
+        for t in self._lattice():
+            yield t
+
+    def __len__(self):
+        return self.measure
+
+    def _lattice(self):
         """A generator for all the points in the block
 
         Raises:

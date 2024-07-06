@@ -24,6 +24,7 @@ def test_exceptions():
 def test_standard_object():
     """Test standard object behaviour equality and identity"""
     blk = Block(4)
+    assert blk
     blk_2 = copy(blk)
     assert blk is not blk_2
     assert id(blk) != id(blk_2)
@@ -703,21 +704,41 @@ def test_contains_operator():
         assert 0 in core
 
 
-def test_lattice():
+# def test_lattice():
+#     b1 = Block(3, 7)
+#     assert set(b1.lattice()) == {(3,), (4,), (5,), (6,)}
+#     b2 = Block((3, 7), (5, 8))
+#     assert set(b2.lattice()) == {(3, 7), (4, 7)}
+#     b3 = Block((0, 0, 0), (3, 4, 5))
+#     assert len(set(b3.lattice())) == b3.measure
+#     b3 = Block((1, 1, 1), (3, 4, 5))
+#     assert len(set(b3.lattice())) == 24
+
+#     bi = Block(inf)
+#     with pytest.raises(NotFiniteError):
+#         assert len(set(bi.lattice())) == 0
+
+#     assert len(set((bi & b1).lattice())) == b1.measure
+
+#     with pytest.raises(DimensionMismatchError):
+#         assert len(set((bi & b3).lattice())) == b3.measure
+
+
+def test_iterator():
     b1 = Block(3, 7)
-    assert set(b1.lattice()) == {(3,), (4,), (5,), (6,)}
+    assert set(b1) == {(3,), (4,), (5,), (6,)}
     b2 = Block((3, 7), (5, 8))
-    assert set(b2.lattice()) == {(3, 7), (4, 7)}
+    assert set(b2) == {(3, 7), (4, 7)}
     b3 = Block((0, 0, 0), (3, 4, 5))
-    assert len(set(b3.lattice())) == b3.measure
+    assert len(set(b3)) == b3.measure == len(b3)
     b3 = Block((1, 1, 1), (3, 4, 5))
-    assert len(set(b3.lattice())) == 24
+    assert len(set(b3)) == 24 == len(b3)
 
     bi = Block(inf)
     with pytest.raises(NotFiniteError):
-        assert len(set(bi.lattice())) == 0
+        assert len(set(bi)) == 0
 
-    assert len(set((bi & b1).lattice())) == b1.measure
+    assert len(set((bi & b1))) == b1.measure
 
     with pytest.raises(DimensionMismatchError):
-        assert len(set((bi & b3).lattice())) == b3.measure
+        assert len(set((bi & b3))) == b3.measure

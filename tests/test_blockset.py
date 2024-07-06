@@ -12,6 +12,7 @@ from blocksets.classes.exceptions import (
 
 def test_construction():
     bs = BlockSet()
+    assert not bs
     assert bs.dimensions is None
     assert bs.normalised == True
 
@@ -22,8 +23,9 @@ def test_construction():
         bs = BlockSet(0)
 
     bs = BlockSet(2)
+    assert not bs
     assert bs.dimensions == 2
-    assert set(bs.blocks()) == set()
+    assert set(bs) == set()
     assert bs.normalised == True
 
 
@@ -40,6 +42,7 @@ def test_dimensions():
 def test_empty():
     bs = BlockSet()
     assert bs.empty
+    assert not bs
     blk = Block((1, 1))
     bs.add(blk)
     assert not bs.empty
@@ -52,6 +55,7 @@ def test_empty():
     bs.remove(blk)
     assert bs.empty
     assert not bs
+    assert len(bs) == 0
 
 
 def test_add():
@@ -68,7 +72,7 @@ def test_add():
     blk_2 = Block(3)
     bs.add(blk_2)
     assert bs._operation_stack[1] == (OperationType.ADD, blk_2)
-    assert len(bs._operation_stack) == 2
+    assert len(bs) == 2
     assert bs.normalised == False
 
 
@@ -76,10 +80,10 @@ def test_clear():
     bs = BlockSet()
     bs.add(Block(1))
     bs.add(Block(2))
-    assert len(bs._operation_stack) == 2
+    assert len(bs) == 2
     assert bs.normalised == False
     bs.clear()
-    assert len(bs._operation_stack) == 0
+    assert len(bs) == 0
     assert bs.normalised == True
 
 
@@ -97,7 +101,7 @@ def test_remove():
     blk_2 = Block(3)
     bs.remove(blk_2)
     assert bs._operation_stack[1] == (OperationType.REMOVE, blk_2)
-    assert len(bs._operation_stack) == 2
+    assert len(bs) == 2
     assert bs.normalised == False
 
 
@@ -115,8 +119,28 @@ def test_toggle():
     blk_2 = Block(3)
     bs.toggle(blk_2)
     assert bs._operation_stack[1] == (OperationType.TOGGLE, blk_2)
-    assert len(bs._operation_stack) == 2
+    assert len(bs) == 2
     assert bs.normalised == False
+
+
+def test_len_after_normalisation():
+    bs = BlockSet()
+    bs.add(Block(1, 5))
+    bs.add(Block(3, 8))
+    assert len(bs) == 2
+    assert bs.normalised == False
+    bs.normalise()
+    assert len(bs) == 1
+    assert bs.normalised == True
+
+    bs = BlockSet()
+    bs.add(Block((0, 0), (4, 4)))
+    bs.add(Block((2, 2), (6, 6)))
+    assert len(bs) == 2
+    assert bs.normalised == False
+    bs.normalise()
+    assert len(bs) == 3
+    assert bs.normalised == True
 
 
 def test_generators():
@@ -127,6 +151,5 @@ def test_generators():
     bs.add(blk)
     bs.add(blk_2)
     assert bs.normalised == False
-    assert set(bs.blocks()) == {blk, blk_2}
-    assert set(bs.block_tuples()) == {blk.norm, blk_2.norm}
+    assert set(bs) == {blk, blk_2}
     assert bs.normalised == True

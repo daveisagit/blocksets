@@ -124,7 +124,7 @@ class BlockSet:
             int: point count
         """
         self.normalise()
-        return sum(blk.measure for blk in self.blocks())
+        return sum(blk.measure for blk in self)
 
     def add(self, blk: Block):
         """Append an add block operation to the stack
@@ -192,7 +192,7 @@ class BlockSet:
 
         self._normalised = True
 
-    def blocks(self):
+    def _blocks(self):
         """Generator for all the disjoint blocks after normalising
 
         Yields:
@@ -204,17 +204,13 @@ class BlockSet:
         for _, blk in self._operation_stack:
             yield blk
 
-    def block_tuples(self):
-        """Generator for all the disjoint blocks after normalising
 
-        Yields:
-           Tuple: a block expressed as a tuple pair of ends/corners
-        """
-        self.normalise()
+    def __iter__(self):
+        for blk in self._blocks():
+            yield blk
 
-        # after normalisation we have only add operations on disjoint blocks
-        for _, blk in self._operation_stack:
-            yield blk.norm
+    def __len__(self):
+        return len(self._operation_stack)
 
     def __bool__(self) -> bool:
         return not self.empty
@@ -231,8 +227,8 @@ class BlockSet:
     def __eq__(self, value: object) -> bool:
         self._validate_operation_argument(value)
         # leverage python set equals operation
-        value_set = set(value.blocks())
-        self_set = set(self.blocks())
+        value_set = set(value)
+        self_set = set(self)
         return self_set == value_set
 
     def __and__(self, value: object) -> Self:
@@ -309,7 +305,7 @@ class BlockSet:
         # we are not looking to update this block set so we take a copy
         # of self as the starting point for building the result
         result = deepcopy(self)
-        for blk in other.blocks():
+        for blk in other:
             result.add(blk)
         return result
 
@@ -329,10 +325,10 @@ class BlockSet:
         # of self as the starting point for building the result
         result = deepcopy(self)
         result.normalise()
-        self_blocks = set(result.blocks())
+        self_blocks = set(result)
         other.normalise()
 
-        for blk in other.blocks():
+        for blk in other:
             result.remove(blk)
 
         for blk in self_blocks:
@@ -360,7 +356,7 @@ class BlockSet:
         # we are not looking to update this block set so we take a copy
         # of self as the starting point for building the result
         result = deepcopy(self)
-        for blk in other.blocks():
+        for blk in other:
             result.remove(blk)
         return result
 
@@ -383,7 +379,7 @@ class BlockSet:
         # of self as the starting point for building the result
         result = deepcopy(self)
         result.normalise()
-        for blk in other.blocks():
+        for blk in other:
             result.toggle(blk)
         return result
 
@@ -397,7 +393,7 @@ class BlockSet:
             BlockSet: self
         """
         self._validate_operation_argument(other)
-        for blk in other.blocks():
+        for blk in other:
             self.add(blk)
         return self
 
@@ -431,7 +427,7 @@ class BlockSet:
             BlockSet: self
         """
         self._validate_operation_argument(other)
-        for blk in other.blocks():
+        for blk in other:
             self.remove(blk)
         return self
 
@@ -449,7 +445,7 @@ class BlockSet:
         """
         self._validate_operation_argument(other)
         self.normalise()
-        for blk in other.blocks():
+        for blk in other:
             self.toggle(blk)
         return self
 

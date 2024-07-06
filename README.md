@@ -79,7 +79,7 @@ bs.remove(centre_cube)
 assert bs.point_count == 999970000299998
 assert bs.block_count == 6
 
-sorted_blocks = sorted(bs.blocks(), key=lambda x: x.norm)
+sorted_blocks = sorted(bs, key=lambda x: x.norm)
 
 for blk in sorted_blocks:
     print(f"{blk:50} {blk.measure}")

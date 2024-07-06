@@ -16,7 +16,7 @@ def apply_to_tuple_set(s: set, op_type: OperationType, block: Block):
         op_type (OperationType): Add, Remove or Toggle
         block (Block): A block object
     """
-    for t in block.lattice():
+    for t in block:
         if op_type == OperationType.ADD:
             s.add(t)
         if op_type == OperationType.REMOVE:
@@ -55,8 +55,8 @@ def block_set_to_tuple_set(bs: BlockSet) -> set:
         set: The equivalent as a set of tuple points
     """
     tuple_set = set()
-    for b in bs.blocks():
-        bs = set(b.lattice())
+    for b in bs:
+        bs = set(b)
         assert tuple_set & bs == set()
         tuple_set.update(bs)
     return tuple_set

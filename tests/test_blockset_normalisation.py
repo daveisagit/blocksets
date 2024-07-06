@@ -175,7 +175,7 @@ def test_normalisation_sanity_2D():
 
     bs.add(x)
     bs.add(y)
-    assert set(bs.blocks()) == {
+    assert set(bs) == {
         ((1, 1), (5, 7)),
         ((5, 1), (9, 10)),
         ((9, 4), (13, 10)),
@@ -184,8 +184,8 @@ def test_normalisation_sanity_2D():
     bs.clear()
     bs.add(x)
     bs.remove(y)
-    s = set(bs.blocks())
-    assert set(bs.blocks()) == {
+    s = set(bs)
+    assert set(bs) == {
         ((1, 1), (5, 7)),
         ((5, 1), (9, 4)),
     }
@@ -193,7 +193,7 @@ def test_normalisation_sanity_2D():
     bs.clear()
     bs.add(x)
     bs.toggle(y)
-    assert set(bs.blocks()) == {
+    assert set(bs) == {
         ((1, 1), (5, 7)),
         ((5, 1), (9, 4)),
         ((5, 7), (9, 10)),
@@ -276,12 +276,12 @@ def test_normalisation_sanity_3D():
 
     bs.add(x)
     bs.add(y)
-    assert set(bs.blocks()) == {x}
+    assert set(bs) == {x}
 
     bs.clear()
     bs.add(x)
     bs.remove(y)
-    assert set(bs.blocks()) == {
+    assert set(bs) == {
         ((0, 0, 0), (1, 3, 3)),  # left face
         ((1, 1, 0), (3, 3, 2)),  # 2x2x2 section in middle+bottom
         ((1, 0, 0), (3, 1, 3)),  # 6 on front 235689
@@ -295,7 +295,7 @@ def test_normalisation_sanity_3D():
     bs2.add(left_face)
     bs2.add(front_face)
     bs2.add(bottom_2_layers)
-    assert set(bs2.blocks()) == set(bs.blocks())
+    assert set(bs2) == set(bs)
 
 
 # Dimensions: 3
