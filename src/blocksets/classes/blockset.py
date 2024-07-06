@@ -85,7 +85,7 @@ class BlockSet:
         return None
 
     @property
-    def empty(self) -> bool:
+    def is_empty(self) -> bool:
         """Returns True if empty
 
         Returns:
@@ -95,7 +95,7 @@ class BlockSet:
         return not bool(self._operation_stack)
 
     @property
-    def normalised(self) -> bool:
+    def is_normalised(self) -> bool:
         """Return the normalisation state
 
         Returns:
@@ -204,7 +204,6 @@ class BlockSet:
         for _, blk in self._operation_stack:
             yield blk
 
-
     def __iter__(self):
         for blk in self._blocks():
             yield blk
@@ -213,7 +212,7 @@ class BlockSet:
         return len(self._operation_stack)
 
     def __bool__(self) -> bool:
-        return not self.empty
+        return not self.is_empty
 
     def __contains__(self, item) -> bool:
         if self.dimensions is None:
@@ -467,7 +466,7 @@ class BlockSet:
         # Under which cases/circumstances one out performs the other
         # can be explored, for now we'll go with reuse of intersection
         result = self & other
-        return result.empty
+        return result.is_empty
 
     def issubset(self, other: Self) -> bool:
         """Returns True if self is a subset of other

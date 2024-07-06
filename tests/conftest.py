@@ -9,7 +9,7 @@ from blocksets.classes.blockset import BlockSet
 @pytest.fixture()
 def empty_block_set():
     bs = BlockSet()
-    assert bs.empty
+    assert bs.is_empty
     return bs
 
 
@@ -36,7 +36,7 @@ AxB  --  --  --  --  -- (symmetric difference i.e. xor)
 @pytest.fixture()
 def d1_empty():
     bs = BlockSet(1)
-    assert bs.empty
+    assert bs.is_empty
     return bs
 
 
@@ -145,7 +145,7 @@ def d1_positives():
 @pytest.fixture()
 def d2_empty():
     bs = BlockSet(2)
-    assert bs.empty
+    assert bs.is_empty
     return bs
 
 
