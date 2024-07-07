@@ -5,8 +5,8 @@
 ![Read the Docs](https://img.shields.io/readthedocs/blocksets)
 ![Codecov](https://img.shields.io/codecov/c/github/daveisagit/blocksets)
 
-Python library for efficiently modelling set type operations on variable layouts
-of discrete space in any dimension.
+Python package for performing set type operations on any layout of discrete
+space in any dimension.
 
 - **Block** is an orthogonal clump of points/pixels (_i.e. a line segment,
 rectangle, cuboid, hyper... you get the idea_)

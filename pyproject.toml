@@ -8,7 +8,7 @@ version = "0.0.23"
 authors = [
   { name="Dave Budd", email="maildavebudd@gmail.com" },
 ]
-description = "A Python package for efficiently computing blocks of discrete space in any dimension."
+description = "Python package for performing set type operations on any layout of discrete space in any dimension."
 readme = "README.md"
 requires-python = ">=3.11"
 license = {file = "LICENSE.md"}
@@ -20,5 +20,5 @@ classifiers = [
 
 [project.urls]
 Homepage = "https://github.com/daveisagit/blocksets"
-documentation  = "https://blocksets.readthedocs.io/"
+Documentation  = "https://blocksets.readthedocs.io/"
 Issues = "https://github.com/daveisagit/blocksets/issues"
