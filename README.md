@@ -2,7 +2,7 @@
 
 ![Python 3.11](https://img.shields.io/badge/python-3.11-blue.svg)
 ![PyPI - Version](https://img.shields.io/pypi/v/blocksets)
-![docs](https://readthedocs.org/projects/blocksets/badge)
+![Read the Docs](https://img.shields.io/readthedocs/blocksets)
 ![Codecov](https://img.shields.io/codecov/c/github/daveisagit/blocksets)
 
 Python library for efficiently modelling set type operations on variable layouts
@@ -24,7 +24,7 @@ pushes the limits of the available computing power.
 ## How?
 
 - Create any layout (as a blockset) using a stacked list of block operations
-  which `add` `remove` or `toggle` blocks over the current state.
+  which `add` `remove` or `toggle` blocks over the current blockset state.
 - Perform the usual set arithmetic `union` `intersection` `difference` etc. on
   blockset objects.
 - Compare 2 blockset objects using the standard set comparison methods and
@@ -39,24 +39,25 @@ Requires python 3.11 or higher, there are no dependencies.
 
 ## Usage
 
-Full documentation is available (work in progress) at [readthedocs]([https://](https://blocksets.readthedocs.io/))
+Full documentation is available (work in progress) at [readthedocs](https://blocksets.readthedocs.io/)
 
 It's worth reviewing and running the `example_use.py` module via
 `python -m blocksets.example_use`
 
 ### TL;DR
 
-Here's a snippet for taste
-
 ```python
 from blocksets import Block, BlockSet
 
-big_rubik = Block((0, 0, 0), (99999, 99999, 99999))
+# A block is defined by the co-ordinates of the opposite corners
+big_rubik = Block((0, 0, 0), (99999, 99999, 99999)) 
 assert big_rubik.measure == 999970000299999
+
+# A single argument is a unit block
 centre_cube = Block((49999, 49999, 49999))
 assert centre_cube.measure == 1
 
-# Creates a large 3 dimensional cube with the centre missing
+# Create a large 3 dimensional cube with the centre missing
 bs = BlockSet(3)  
 bs.add(big_rubik)
 bs.remove(centre_cube)
@@ -70,7 +71,7 @@ for blk in sorted_blocks:
     print(f"{blk:50} {blk.measure}")
 ```
 
-printed output
+The resulting space is modelled using 6 objects (effectively tuples) instead of 999970000299998
 
 ```text
 (0, 0, 0)..(49999, 99999, 99999)                   499980000249999
