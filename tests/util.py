@@ -106,3 +106,28 @@ def generate_interval_test_set_1D(n: int) -> set:
 
 def multiple_of_tuple(t, m):
     return tuple([m * x for x in t])
+
+
+def generate_interval_patterns(n):
+    """Splitting the line into n segments return all possible patterns.
+    Effectively the binary pattern of 2^n"""
+    patterns = set()
+    for v in range(2**n):
+        p = f"{v:0{n}b}"  # pad with leading zeros to n digits
+        reading_ones = False
+        pattern = []
+        for idx, ch in enumerate(p):
+            if ch == "1" and not reading_ones:
+                interval = [idx]
+                reading_ones = True
+            if ch == "0" and reading_ones:
+                interval.append(idx)
+                pattern.append(tuple(interval))
+                reading_ones = False
+        if reading_ones:
+            interval.append(len(p))
+            pattern.append(tuple(interval))
+
+        pattern = tuple(sorted(pattern))
+        patterns.add(pattern)
+    return patterns

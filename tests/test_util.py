@@ -2,7 +2,11 @@
 
 from blocksets.classes.block import Block
 from blocksets.classes.blockset import OperationType
-from util import apply_to_tuple_set, generate_interval_test_set_1D
+from util import (
+    apply_to_tuple_set,
+    generate_interval_patterns,
+    generate_interval_test_set_1D,
+)
 
 
 def test_apply_to_tuple_set():
@@ -100,6 +104,28 @@ def test_generate_interval_test_set_1D():
     # This takes about l.5s to run and adds no value, left for reference.
     # test_set_4 = generate_interval_test_set_1D(4)
     # assert len(test_set_4) == 23917
+
+
+def test_generate_interval_patterns():
+    assert generate_interval_patterns(0) == {()}
+    assert generate_interval_patterns(1) == {(), ((0, 1),)}
+    assert generate_interval_patterns(2) == {
+        (),
+        ((0, 1),),
+        ((0, 2),),
+        ((1, 2),),
+    }
+    assert generate_interval_patterns(3) == {
+        (),
+        ((0, 1),),
+        ((0, 2),),
+        ((0, 3),),
+        ((1, 2),),
+        ((1, 3),),
+        ((2, 3),),
+        ((0, 1), (2, 3)),
+    }
+    assert len(generate_interval_patterns(4)) == 16
 
 
 def test_example_use():
