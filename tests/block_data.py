@@ -3,7 +3,7 @@ Block arrangements for tests and fixtures
 """
 
 from blocksets.classes.block import Block
-from util import generate_test_set_1D, multiple_of_tuple
+from util import generate_interval_test_set_1D, multiple_of_tuple
 
 
 def blocks_1D_arbitrary_set_1():
@@ -29,7 +29,7 @@ def blocks_1D_arbitrary_set_1():
 
 def blocks_1D_all_arrangements_of_2(scale=5, points=[4, 7, 12, 16]):
     arrangements = []
-    for test_set in generate_test_set_1D(2):
+    for test_set in generate_interval_test_set_1D(2):
         if points:
             arrangements.append([Block(points[a], points[b]) for a, b in test_set])
             continue
@@ -39,7 +39,7 @@ def blocks_1D_all_arrangements_of_2(scale=5, points=[4, 7, 12, 16]):
 
 def blocks_1D_all_arrangements_of_3(scale=5):
     arrangements = []
-    for test_set in generate_test_set_1D(3):
+    for test_set in generate_interval_test_set_1D(3):
         arrangements.append([Block(a * scale, b * scale) for a, b in test_set])
     return arrangements
 
@@ -56,7 +56,7 @@ def blocks_2D_arbitrary_set_example():
 
 def blocks_2D_all_arrangements_of_2(scale=5):
     arrangements = []
-    interval_pairs = generate_test_set_1D(2)
+    interval_pairs = generate_interval_test_set_1D(2)
     for x_pair in interval_pairs:
         for y_pair in interval_pairs:
 
@@ -78,7 +78,7 @@ def blocks_2D_all_arrangements_of_2(scale=5):
 
 def blocks_3D_all_arrangements_of_2(scale=5):
     arrangements = []
-    interval_pairs = generate_test_set_1D(2)
+    interval_pairs = generate_interval_test_set_1D(2)
     for x_pair in interval_pairs:
         for y_pair in interval_pairs:
             for z_pair in interval_pairs:

@@ -2,7 +2,7 @@
 
 from blocksets.classes.block import Block
 from blocksets.classes.blockset import OperationType
-from util import apply_to_tuple_set, generate_test_set_1D
+from util import apply_to_tuple_set, generate_interval_test_set_1D
 
 
 def test_apply_to_tuple_set():
@@ -65,8 +65,8 @@ def test_apply_to_tuple_set():
     }
 
 
-def test_generate_test_set_1D():
-    test_set_2 = generate_test_set_1D(2)
+def test_generate_interval_test_set_1D():
+    test_set_2 = generate_interval_test_set_1D(2)
     assert len(test_set_2) == 13
     assert ((0, 1), (0, 1)) in test_set_2
 
@@ -84,7 +84,7 @@ def test_generate_test_set_1D():
     assert ((0, 3), (1, 2)) in test_set_2
     assert ((1, 2), (0, 3)) in test_set_2
 
-    test_set_3 = generate_test_set_1D(3)
+    test_set_3 = generate_interval_test_set_1D(3)
     assert len(test_set_3) == 409
 
     summary = [0] * 7
@@ -98,7 +98,7 @@ def test_generate_test_set_1D():
     # relations between n intervals on a line. https://oeis.org/A055203
 
     # This takes about l.5s to run and adds no value, left for reference.
-    # test_set_4 = generate_test_set_1D(4)
+    # test_set_4 = generate_interval_test_set_1D(4)
     # assert len(test_set_4) == 23917
 
 

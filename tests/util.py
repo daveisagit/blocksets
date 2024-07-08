@@ -62,7 +62,7 @@ def block_set_to_tuple_set(bs: BlockSet) -> set:
     return tuple_set
 
 
-def generate_test_set_1D(n: int) -> set:
+def generate_interval_test_set_1D(n: int) -> set:
     """Generates all possible arrangements of intervals on a line
     for a given number of intervals required.
 
