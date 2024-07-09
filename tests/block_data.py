@@ -7,6 +7,7 @@ from blocksets.classes.blockset import BlockSet
 from util import (
     generate_interval_patterns,
     generate_interval_test_set_1D,
+    marker_to_ordinate,
     multiple_of_tuple,
 )
 
@@ -84,7 +85,7 @@ def blocks_2D_all_arrangements_of_2(scale=5):
     return arrangements
 
 
-def blocks_3D_all_arrangements_of_2(scale=5):
+def blocks_3D_all_arrangements_of_2(scale=5, markers=None):
     """Generate all possible arrangements of a pair of cuboids"""
     arrangements = []
     interval_pairs = generate_interval_test_set_1D(2)
@@ -108,21 +109,60 @@ def blocks_3D_all_arrangements_of_2(scale=5):
     return arrangements
 
 
-def blocksets_1D_all_arrangements_over_4(scale=5, markers=[-10, -2, 0, 4, 20]):
+def blocksets_1D_all_arrangements_over_4(markers=None):
     """Generate all possible patterns of 4 intervals over the given point markers"""
     patterns = sorted(generate_interval_patterns(4))
     blocksets = []
     for marker_set in patterns:
         bs = BlockSet(1)
-        if markers:
-            for a, b in marker_set:
-                bs.add(Block(markers[a], markers[b]))
-            bs.normalise()
-            blocksets.append(bs)
-            continue
         for a, b in marker_set:
-            bs.add(Block(a * scale, b * scale))
+            bs.add(
+                Block(
+                    marker_to_ordinate(a, markers=markers),
+                    marker_to_ordinate(b, markers=markers),
+                )
+            )
         bs.normalise()
         blocksets.append(bs)
 
     return blocksets
+
+
+def blocksets_2D_all_arrangements_over_2x2(scale=5, markers=None):
+    """Generate all possible patterns of 2x2 intervals over the given point markers"""
+    patterns = sorted(generate_interval_patterns(2))
+    blocksets = []
+    for marker_set_0 in patterns:
+        for marker_set_1 in patterns:
+            bs = BlockSet(2)
+            for a, b in marker_set_0:
+                bs.add(
+                    Block(
+                        (
+                            marker_to_ordinate(0, markers=markers[0]),
+                            marker_to_ordinate(a, markers=markers[1]),
+                        ),
+                        (
+                            marker_to_ordinate(1, markers=markers[0]),
+                            marker_to_ordinate(b, markers=markers[1]),
+                        ),
+                    )
+                )
+            for a, b in marker_set_1:
+                bs.add(
+                    Block(
+                        (
+                            marker_to_ordinate(1, markers=markers[0]),
+                            marker_to_ordinate(a, markers=markers[1]),
+                        ),
+                        (
+                            marker_to_ordinate(2, markers=markers[0]),
+                            marker_to_ordinate(b, markers=markers[1]),
+                        ),
+                    )
+                )
+
+            bs.normalise()
+            blocksets.append(bs)
+
+    return sorted(blocksets, key=lambda x: x.point_count)

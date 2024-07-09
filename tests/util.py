@@ -108,6 +108,14 @@ def multiple_of_tuple(t, m):
     return tuple([m * x for x in t])
 
 
+def marker_to_ordinate(m, markers=None, scale=1):
+    r = m
+    if markers:
+        r = markers[m]
+    r *= scale
+    return r
+
+
 def generate_interval_patterns(n):
     """Splitting the line into n segments return all possible patterns.
     Effectively the binary pattern of 2^n"""
