@@ -242,19 +242,21 @@ def test_in_operator_1D(
 
 
 def blockset_ids(blockset):
+    """We constructed the blocks so that each case will have a unique number of units"""
     blockset_id = ", ".join(str(b) for b in sorted(blockset, key=lambda x: x.norm))
     blockset_id = " {" + blockset_id + "} "
+    blockset_id = f" {blockset.point_count:03} {blockset_id} "
     return blockset_id
 
 
 @pytest.mark.parametrize(
     "blockset_a",
-    blocksets_1D_all_arrangements_over_4(),
+    blocksets_1D_all_arrangements_over_4(markers=[-10, -2, 0, 4, 20]),
     ids=blockset_ids,
 )
 @pytest.mark.parametrize(
     "blockset_b",
-    blocksets_1D_all_arrangements_over_4(),
+    blocksets_1D_all_arrangements_over_4(markers=[-30, -3, 0, 9, 90]),
     ids=blockset_ids,
 )
 def test_all_patterns_all_operations_1D(blockset_a: BlockSet, blockset_b: BlockSet):
@@ -278,3 +280,36 @@ def test_all_patterns_all_operations_1D(blockset_a: BlockSet, blockset_b: BlockS
 
     assert ((0,) in blockset_a) == ((0,) in tuples_a)
     assert blockset_a.point_count == len(tuples_a)
+
+    copy_blockset_a = deepcopy(blockset_a)
+    copy_tuples_a = deepcopy(tuples_a)
+    copy_blockset_a &= blockset_b
+    copy_tuples_a &= tuples_b
+    assert block_set_to_tuple_set(copy_blockset_a) == copy_tuples_a
+    assert block_set_to_tuple_set(blockset_a) == tuples_a
+    assert block_set_to_tuple_set(blockset_b) == tuples_b
+
+    copy_blockset_a = deepcopy(blockset_a)
+    copy_tuples_a = deepcopy(tuples_a)
+    copy_blockset_a |= blockset_b
+    copy_tuples_a |= tuples_b
+    assert block_set_to_tuple_set(copy_blockset_a) == copy_tuples_a
+    assert block_set_to_tuple_set(blockset_a) == tuples_a
+    assert block_set_to_tuple_set(blockset_b) == tuples_b
+
+    copy_blockset_a = deepcopy(blockset_a)
+    copy_tuples_a = deepcopy(tuples_a)
+    copy_blockset_a -= blockset_b
+    copy_tuples_a -= tuples_b
+    assert block_set_to_tuple_set(copy_blockset_a) == copy_tuples_a
+    assert block_set_to_tuple_set(blockset_a) == tuples_a
+    assert block_set_to_tuple_set(blockset_b) == tuples_b
+
+    copy_blockset_a = deepcopy(blockset_a)
+    copy_tuples_a = deepcopy(tuples_a)
+
+    copy_blockset_a ^= blockset_b
+    copy_tuples_a ^= tuples_b
+    assert block_set_to_tuple_set(copy_blockset_a) == copy_tuples_a
+    assert block_set_to_tuple_set(blockset_a) == tuples_a
+    assert block_set_to_tuple_set(blockset_b) == tuples_b
