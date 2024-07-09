@@ -313,3 +313,11 @@ def test_all_patterns_all_operations_1D(blockset_a: BlockSet, blockset_b: BlockS
     assert block_set_to_tuple_set(copy_blockset_a) == copy_tuples_a
     assert block_set_to_tuple_set(blockset_a) == tuples_a
     assert block_set_to_tuple_set(blockset_b) == tuples_b
+
+
+def test_set_operations_on_open_intervals(d1_positives, d1_negatives, d1_all, d1_zero):
+    s = d1_positives | d1_negatives
+    assert len(s) == 2
+    assert d1_zero not in s
+    s.toggle(d1_all)
+    assert set(s) == {d1_zero}

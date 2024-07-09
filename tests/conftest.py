@@ -137,6 +137,16 @@ def d1_positives():
     return bs
 
 
+@pytest.fixture()
+def d1_all():
+    return Block(inf)
+
+
+@pytest.fixture()
+def d1_zero():
+    return Block(0)
+
+
 #
 # 2 - Dimensional Block Set Fixtures
 #

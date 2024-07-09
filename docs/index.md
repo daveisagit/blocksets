@@ -306,7 +306,7 @@ contribution guidelines
 ## TODO - Reminders
 
 - [x] Test cases for normalisation using _Open_ intervals
-- [ ] Test cases for set operations using _Open_ intervals
+- [x] Test cases for set operations using _Open_ intervals
 - [ ] Test cases for set operations in 3D
 - [x] More systematic test case coverage for set operations
 - [ ] Some performance tests on large operation stacks
