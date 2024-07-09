@@ -27,8 +27,8 @@ class NotFiniteError(BlockError):
     default_message = "You can not perform this operation on an infinite block."
 
 
-class NotAPointError(BlockError):
-    default_message = "A block expressing a single point was expected."
+class NotAUnitError(BlockError):
+    default_message = "A block expressing a single unit was expected."
 
 
 class ValueParsingError(BlockError):

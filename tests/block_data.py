@@ -165,4 +165,4 @@ def blocksets_2D_all_arrangements_over_2x2(scale=5, markers=None):
             bs.normalise()
             blocksets.append(bs)
 
-    return sorted(blocksets, key=lambda x: x.point_count)
+    return sorted(blocksets, key=lambda x: x.unit_count)

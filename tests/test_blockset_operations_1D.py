@@ -245,7 +245,7 @@ def blockset_ids(blockset):
     """We constructed the blocks so that each case will have a unique number of units"""
     blockset_id = ", ".join(str(b) for b in sorted(blockset, key=lambda x: x.norm))
     blockset_id = " {" + blockset_id + "} "
-    blockset_id = f" {blockset.point_count:03} {blockset_id} "
+    blockset_id = f" {blockset.unit_count:03} {blockset_id} "
     return blockset_id
 
 
@@ -279,7 +279,7 @@ def test_all_patterns_all_operations_1D(blockset_a: BlockSet, blockset_b: BlockS
     assert (blockset_a > blockset_b) == (tuples_a > tuples_b)
 
     assert ((0,) in blockset_a) == ((0,) in tuples_a)
-    assert blockset_a.point_count == len(tuples_a)
+    assert blockset_a.unit_count == len(tuples_a)
 
     copy_blockset_a = deepcopy(blockset_a)
     copy_tuples_a = deepcopy(tuples_a)

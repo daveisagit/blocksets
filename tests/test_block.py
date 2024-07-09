@@ -9,7 +9,7 @@ from blocksets.classes.block import Block
 from blocksets.classes.exceptions import (
     BlockError,
     DimensionMismatchError,
-    NotAPointError,
+    NotAUnitError,
     NotFiniteError,
     ValueParsingError,
     ZeroSpaceError,
@@ -29,14 +29,14 @@ def test_standard_object():
     assert blk is not blk_2
     assert id(blk) != id(blk_2)
     assert blk == blk_2
-    assert blk_2.is_a_point
+    assert blk_2.is_a_unit
 
     blk = Block(-1, 3)
     blk_2 = copy(blk)
     assert blk is not blk_2
     assert id(blk) != id(blk_2)
     assert blk == blk_2
-    assert not blk_2.is_a_point
+    assert not blk_2.is_a_unit
 
 
 def test_raise_parsing_error():
@@ -121,27 +121,27 @@ def test_raise_dimension_mismatch():
 def test_parsing():
     """Test we parse correctly"""
 
-    # assume a point from non-sequence argument
+    # assume a unit from non-sequence argument
     b = Block.parse(1)
-    assert b.is_a_point
+    assert b.is_a_unit
     assert b.dimensions == 1
     assert b == ((1,), (2,))
 
-    # assume a point from sequence > 2
+    # assume a unit from sequence > 2
     b = Block.parse([1, 6, 4])
-    assert b.is_a_point
+    assert b.is_a_unit
     assert b.dimensions == 3
     assert b == ((1, 6, 4), (2, 7, 5))
 
-    # assume a point from sequence of one item - 2D
+    # assume a unit from sequence of one item - 2D
     b = Block.parse(((1, 6),))
-    assert b.is_a_point
+    assert b.is_a_unit
     assert b.dimensions == 2
     assert b == ((1, 6), (2, 7))
 
-    # assume a point from sequence of one item - 3D
+    # assume a unit from sequence of one item - 3D
     b = Block.parse(((1, 6, 4),))
-    assert b.is_a_point
+    assert b.is_a_unit
     assert b.dimensions == 3
     assert b == ((1, 6, 4), (2, 7, 5))
 
@@ -184,7 +184,7 @@ def test_instantiation_1D():
     assert blk.a == (1,)
     assert blk.b == (2,)
     assert str(blk) == "1"
-    assert blk.is_a_point
+    assert blk.is_a_unit
     assert blk.dimensions == 1
     assert blk.is_finite
     assert blk.side_lengths == (1,)
@@ -197,7 +197,7 @@ def test_instantiation_1D():
     assert blk.a == (-inf,)
     assert blk.b == (inf,)
     assert str(blk) == "-inf..inf"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 1
     assert not blk.is_finite
     assert blk.side_lengths == (inf,)
@@ -209,7 +209,7 @@ def test_instantiation_1D():
     assert blk.a == (-inf,)
     assert blk.b == (inf,)
     assert str(blk) == "-inf..inf"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 1
     assert not blk.is_finite
     assert blk.side_lengths == (inf,)
@@ -223,7 +223,7 @@ def test_instantiation_1D():
     assert blk.a == (1,)
     assert blk.b == (inf,)
     assert str(blk) == "1..inf"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 1
     assert not blk.is_finite
     assert blk.side_lengths == (inf,)
@@ -235,7 +235,7 @@ def test_instantiation_1D():
     assert blk.a == (-inf,)
     assert blk.b == (1,)
     assert str(blk) == "-inf..1"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 1
     assert not blk.is_finite
     assert blk.side_lengths == (inf,)
@@ -247,7 +247,7 @@ def test_instantiation_1D():
     assert blk.a == (-inf,)
     assert blk.b == (-2,)
     assert str(blk) == "-inf..-2"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 1
     assert not blk.is_finite
     assert blk.side_lengths == (inf,)
@@ -259,7 +259,7 @@ def test_instantiation_1D():
     assert blk.a == (-inf,)
     assert blk.b == (inf,)
     assert str(blk) == "-inf..inf"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 1
     assert not blk.is_finite
     assert blk.side_lengths == (inf,)
@@ -271,7 +271,7 @@ def test_instantiation_1D():
     assert blk.a == (-inf,)
     assert blk.b == (inf,)
     assert str(blk) == "-inf..inf"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 1
     assert not blk.is_finite
     assert blk.side_lengths == (inf,)
@@ -283,7 +283,7 @@ def test_instantiation_1D():
     assert blk.a == (2,)
     assert blk.b == (3,)
     assert str(blk) == "2"
-    assert blk.is_a_point
+    assert blk.is_a_unit
     assert blk.dimensions == 1
     assert blk.is_finite
     assert blk.side_lengths == (1,)
@@ -295,7 +295,7 @@ def test_instantiation_1D():
     assert blk.a == (2,)
     assert blk.b == (3,)
     assert str(blk) == "2"
-    assert blk.is_a_point
+    assert blk.is_a_unit
     assert blk.dimensions == 1
     assert blk.is_finite
     assert blk.side_lengths == (1,)
@@ -307,7 +307,7 @@ def test_instantiation_1D():
     assert blk.a == (-5,)
     assert blk.b == (5,)
     assert str(blk) == "-5..5"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 1
     assert blk.is_finite
     assert blk.side_lengths == (10,)
@@ -327,7 +327,7 @@ def test_instantiation_2D():
     blk = Block(a)
     assert blk == ((-1, 3), (0, 4))
     assert str(blk) == "(-1, 3)"
-    assert blk.is_a_point
+    assert blk.is_a_unit
     assert blk.dimensions == 2
     assert blk.is_finite
     assert blk.side_lengths == (1, 1)
@@ -337,7 +337,7 @@ def test_instantiation_2D():
     blk = Block(b)
     assert blk == ((4, 2), (5, 3))
     assert str(blk) == "(4, 2)"
-    assert blk.is_a_point
+    assert blk.is_a_unit
     assert blk.dimensions == 2
     assert blk.is_finite
     assert blk.side_lengths == (1, 1)
@@ -347,7 +347,7 @@ def test_instantiation_2D():
     blk = Block(c)
     assert blk == ((-inf, 5), (inf, 6))
     assert str(blk) == "(-inf, 5)..(inf, 6)"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 2
     assert not blk.is_finite
     assert blk.side_lengths == (inf, 1)
@@ -357,7 +357,7 @@ def test_instantiation_2D():
     blk = Block(d)
     assert blk == ((6, -inf), (7, inf))
     assert str(blk) == "(6, -inf)..(7, inf)"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 2
     assert not blk.is_finite
     assert blk.side_lengths == (1, inf)
@@ -375,7 +375,7 @@ def test_instantiation_2D():
     blk = Block(a, b)
     assert blk == ((-1, 2), (4, 3))
     assert str(blk) == "(-1, 2)..(4, 3)"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 2
     assert blk.is_finite
     assert blk.side_lengths == (5, 1)
@@ -385,7 +385,7 @@ def test_instantiation_2D():
     blk = Block(c, b)
     assert blk == ((4, 2), (inf, 5))
     assert str(blk) == "(4, 2)..(inf, 5)"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 2
     assert not blk.is_finite
     assert blk.side_lengths == (inf, 3)
@@ -395,7 +395,7 @@ def test_instantiation_2D():
     blk = Block(d, b)
     assert blk == ((4, -inf), (6, 2))
     assert str(blk) == "(4, -inf)..(6, 2)"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 2
     assert not blk.is_finite
     assert blk.side_lengths == (2, inf)
@@ -405,7 +405,7 @@ def test_instantiation_2D():
     blk = Block(c, d)
     assert blk == ((6, -inf), (inf, 5))
     assert str(blk) == "(6, -inf)..(inf, 5)"
-    assert not blk.is_a_point
+    assert not blk.is_a_unit
     assert blk.dimensions == 2
     assert not blk.is_finite
     assert blk.side_lengths == (inf, inf)
@@ -685,7 +685,7 @@ def test_contains_operator():
     # 1 dimension
     b1 = Block(1, 10)
     b2 = Block(2, 11)
-    with pytest.raises(NotAPointError):
+    with pytest.raises(NotAUnitError):
         assert b1 in b2
 
     assert 6 in b2
@@ -694,7 +694,7 @@ def test_contains_operator():
     # 2 dimensions
     core = Block((-10, -10), (11, 11))
     inner = Block((-2, -2), (2, 2))
-    with pytest.raises(NotAPointError):
+    with pytest.raises(NotAUnitError):
         assert core in core
 
     assert (0, 0) in core
@@ -702,26 +702,6 @@ def test_contains_operator():
 
     with pytest.raises(DimensionMismatchError):
         assert 0 in core
-
-
-# def test_lattice():
-#     b1 = Block(3, 7)
-#     assert set(b1.lattice()) == {(3,), (4,), (5,), (6,)}
-#     b2 = Block((3, 7), (5, 8))
-#     assert set(b2.lattice()) == {(3, 7), (4, 7)}
-#     b3 = Block((0, 0, 0), (3, 4, 5))
-#     assert len(set(b3.lattice())) == b3.measure
-#     b3 = Block((1, 1, 1), (3, 4, 5))
-#     assert len(set(b3.lattice())) == 24
-
-#     bi = Block(inf)
-#     with pytest.raises(NotFiniteError):
-#         assert len(set(bi.lattice())) == 0
-
-#     assert len(set((bi & b1).lattice())) == b1.measure
-
-#     with pytest.raises(DimensionMismatchError):
-#         assert len(set((bi & b3).lattice())) == b3.measure
 
 
 def test_iterator():

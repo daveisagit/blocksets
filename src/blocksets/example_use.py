@@ -7,9 +7,9 @@ from blocksets import Block, BlockSet
 
 def draw_layout(bs: BlockSet):
     """Some simple code to visualise a small blockset in a 10x10 grid"""
-    points = set()
+    tuples = set()
     for b in bs:
-        points.update(set(b))
+        tuples.update(set(b))
 
     print()
     print(bs)
@@ -17,7 +17,7 @@ def draw_layout(bs: BlockSet):
         line = ""
         for col in range(10):
             ch = " "
-            if (col, row) in points:
+            if (col, row) in tuples:
                 ch = "#"
             line += ch
         print(line)
@@ -81,7 +81,7 @@ bs = BlockSet(3)  # Creates a 3 dimensional blockset
 bs.add(big_rubik)
 bs.remove(centre_cube)
 
-print(f"Total volume less 1 central cube: {bs.point_count}")
+print(f"Total volume less 1 central cube: {bs.unit_count}")
 print(f"Number of Blocks: {bs.block_count}")
 print(bs)
 print("Block make-up")

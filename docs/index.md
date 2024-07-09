@@ -76,7 +76,7 @@ bs = BlockSet(3)
 bs.add(big_rubik)
 bs.remove(centre_cube)
 
-assert bs.point_count == 999970000299998
+assert bs.unit_count == 999970000299998
 assert bs.block_count == 6
 
 sorted_blocks = sorted(bs, key=lambda x: x.norm)

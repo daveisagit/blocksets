@@ -28,7 +28,7 @@ class BlockSet:
     In normalized form all the resulting blocks are disjoint.
 
     The normalisation process resolves overlapping and redundancy such that
-    any 2 sets of equal content (i.e. the same set of points) will have the same
+    any 2 sets of equal content (i.e. the same set of pixels) will have the same
     representation in terms of the blocks used to represent the space.
 
     Methods and operators mirror those of the native set class
@@ -68,11 +68,10 @@ class BlockSet:
 
     @property
     def dimensions(self) -> int:
-        """Returns the dimensions of the points/blocks contained within which if not given upon
-        construction are inferred by the content.
+        """Returns number of dimensions of the blockset
 
         Returns:
-            int: The dimensions of the points/blocks contained within
+            int: The dimension of the contained blocks
         """
         if self._dimensions:
             return self._dimensions
@@ -115,7 +114,7 @@ class BlockSet:
         return len(self._operation_stack)
 
     @property
-    def point_count(self) -> int:
+    def unit_count(self) -> int:
         """Returns the total amount of space the block set is taking up.
         This is effectively the sum of all the disjoint block measures after
         normalisation.
@@ -264,7 +263,7 @@ class BlockSet:
         return self.symmetric_difference(value)
 
     def __str__(self) -> str:
-        return f"BlockSet: {self.block_count} Blocks, {self.point_count} Points"
+        return f"BlockSet: {self.block_count} Blocks, {self.unit_count} Points"
 
     def __format__(self, format_spec) -> str:
         return format(str(self), format_spec)

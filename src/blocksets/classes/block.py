@@ -7,7 +7,7 @@ from typing import Self
 
 from blocksets.classes.exceptions import (
     DimensionMismatchError,
-    NotAPointError,
+    NotAUnitError,
     NotFiniteError,
     ValueParsingError,
     ZeroSpaceError,
@@ -18,14 +18,14 @@ class Block:
     """Objects are immutable (so they can be hashed for usage in sets)"""
 
     def __init__(self, a, b=None):
-        """Create a block defined by opposite end/corner points A,B
+        """Create a block defined by opposite end/corners A,B
         A,B are tuples to for the desired dimensions consisting of integer (or inf)
         If using just 1 dimension then wrapping tuple may be omitted.
 
         If wishing to express an open interval then make use of math.inf (or -math.inf)
         which is equivalent to float("inf").
 
-        If B is not supplied then we will default it to a single point if there are no open intervals.
+        If B is not supplied then we will default it to a single unit (if there are no open intervals).
         If there are open intervals then we reflect that in B assuming the opposite end (i.e. the multiplicative inverse)
 
         Raises:
@@ -75,10 +75,10 @@ class Block:
     @classmethod
     def parse(cls, input) -> Self:
         """By default use the input to create a Block, however if the input is a sequence
-        then it is either a list of arguments or a point in some dimension.
+        then it is either a list of arguments or a unit in some dimension.
         Assume it's a list of arguments by default, unless
-        - The len > 2 it must be a single point in some dimension
-        - Or, len == 1 and this only item is also a sequence we will take it to mean a point
+        - The len > 2 it must be a single unit in some dimension
+        - Or, len == 1 and this only item is also a sequence we will take it to mean a unit
 
         Args:
             input: Anything
@@ -157,7 +157,7 @@ class Block:
         """Normalise the tuple pair of coordinates A,B representing the opposite ends/corners of the block
         We ensure the vector from A -> B is always in a positive direction for any component dimension
 
-        We note if the block is a single point to save computing it again
+        We note if the block is a single unit to save computing it again
 
         Args:
             a (tuple): Coordinates of A
@@ -166,7 +166,7 @@ class Block:
 
         na = []
         nb = []
-        self._is_a_point = True
+        self._is_a_unit = True
         for i in range(len(a)):
             ai = a[i]
             bi = b[i]
@@ -175,20 +175,20 @@ class Block:
             na.append(nai)
             nb.append(nbi)
             if nbi != nai + 1:
-                self._is_a_point = False
+                self._is_a_unit = False
 
         # finally set the limiting end/corners of the block
         self._a = tuple(na)
         self._b = tuple(nb)
 
-    def _parse_point_arg(self, x) -> Self:
-        """For when any tuple is assumed to be a point"""
+    def _parse_unit_block_arg(self, x) -> Self:
+        """For when any tuple is assumed to be a unit"""
         if not isinstance(x, Block):
             x = Block(x)
         if self.dimensions != x.dimensions:
             raise DimensionMismatchError()
-        if not x.is_a_point:
-            raise NotAPointError
+        if not x.is_a_unit:
+            raise NotAUnitError
         return x
 
     def _in_contact_with(self, other: Self) -> bool:
@@ -242,13 +242,13 @@ class Block:
         return self._b
 
     @property
-    def is_a_point(self) -> bool:
-        """Property set upon creation to flag if the block is a single point
+    def is_a_unit(self) -> bool:
+        """Property set upon creation to flag if the block is a single unit
 
         Returns:
-            bool: True if the block a single point in any dimension
+            bool: True if the block a single unit in any dimension
         """
-        return self._is_a_point
+        return self._is_a_unit
 
     @property
     def dimensions(self) -> int:
@@ -313,7 +313,7 @@ class Block:
         return self._intersection(other)
 
     def __contains__(self, item) -> bool:
-        item = self._parse_point_arg(item)
+        item = self._parse_unit_block_arg(item)
         return item <= self
 
     def __eq__(self, value: object) -> bool:
@@ -352,9 +352,9 @@ class Block:
 
     def __str__(self) -> str:
         """Render as the coordinates of the opposite corners or the interval on a line.
-        Either as A -> B or just A if its a single point
+        Either as A -> B or just A if its a single unit
         """
-        if self.is_a_point:
+        if self.is_a_unit:
             if self.dimensions == 1:
                 return str(self.a[0])
             return str(self.a)
@@ -394,13 +394,13 @@ class Block:
         return self.measure
 
     def _lattice(self):
-        """A generator for all the points in the block
+        """A generator for all the pixel tuples in the block
 
         Raises:
             NotFiniteError: if requested on an infinite block
 
         Yields:
-            tuple: The coordinates of a point in the block
+            tuple: The coordinates of an integer tuple unit in the block
         """
         if not self.is_finite:
             raise NotFiniteError()
