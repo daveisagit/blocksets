@@ -11,7 +11,6 @@ from blocksets.classes.exceptions import (
     ValueParsingError,
 )
 from block_data import blocksets_1D_all_arrangements_over_4
-from util import block_set_to_tuple_set
 
 
 def test_argument_validation(d1_A, d2_empty):
@@ -260,13 +259,13 @@ def blockset_ids(blockset):
     ids=blockset_ids,
 )
 def test_all_patterns_all_operations_1D(blockset_a: BlockSet, blockset_b: BlockSet):
-    tuples_a = block_set_to_tuple_set(blockset_a)
-    tuples_b = block_set_to_tuple_set(blockset_b)
+    tuples_a = set(blockset_a.units())
+    tuples_b = set(blockset_b.units())
 
-    assert block_set_to_tuple_set(blockset_a & blockset_b) == tuples_a & tuples_b
-    assert block_set_to_tuple_set(blockset_a | blockset_b) == tuples_a | tuples_b
-    assert block_set_to_tuple_set(blockset_a - blockset_b) == tuples_a - tuples_b
-    assert block_set_to_tuple_set(blockset_a ^ blockset_b) == tuples_a ^ tuples_b
+    assert set((blockset_a & blockset_b).units()) == tuples_a & tuples_b
+    assert set((blockset_a | blockset_b).units()) == tuples_a | tuples_b
+    assert set((blockset_a - blockset_b).units()) == tuples_a - tuples_b
+    assert set((blockset_a ^ blockset_b).units()) == tuples_a ^ tuples_b
 
     assert blockset_a.isdisjoint(blockset_b) == tuples_a.isdisjoint(tuples_b)
     assert blockset_a.issubset(blockset_b) == tuples_a.issubset(tuples_b)
@@ -285,34 +284,33 @@ def test_all_patterns_all_operations_1D(blockset_a: BlockSet, blockset_b: BlockS
     copy_tuples_a = deepcopy(tuples_a)
     copy_blockset_a &= blockset_b
     copy_tuples_a &= tuples_b
-    assert block_set_to_tuple_set(copy_blockset_a) == copy_tuples_a
-    assert block_set_to_tuple_set(blockset_a) == tuples_a
-    assert block_set_to_tuple_set(blockset_b) == tuples_b
+    assert set(copy_blockset_a.units()) == copy_tuples_a
+    assert set(blockset_a.units()) == tuples_a
+    assert set(blockset_b.units()) == tuples_b
 
     copy_blockset_a = deepcopy(blockset_a)
     copy_tuples_a = deepcopy(tuples_a)
     copy_blockset_a |= blockset_b
     copy_tuples_a |= tuples_b
-    assert block_set_to_tuple_set(copy_blockset_a) == copy_tuples_a
-    assert block_set_to_tuple_set(blockset_a) == tuples_a
-    assert block_set_to_tuple_set(blockset_b) == tuples_b
+    assert set(copy_blockset_a.units()) == copy_tuples_a
+    assert set(blockset_a.units()) == tuples_a
+    assert set(blockset_b.units()) == tuples_b
 
     copy_blockset_a = deepcopy(blockset_a)
     copy_tuples_a = deepcopy(tuples_a)
     copy_blockset_a -= blockset_b
     copy_tuples_a -= tuples_b
-    assert block_set_to_tuple_set(copy_blockset_a) == copy_tuples_a
-    assert block_set_to_tuple_set(blockset_a) == tuples_a
-    assert block_set_to_tuple_set(blockset_b) == tuples_b
+    assert set(copy_blockset_a.units()) == copy_tuples_a
+    assert set(blockset_a.units()) == tuples_a
+    assert set(blockset_b.units()) == tuples_b
 
     copy_blockset_a = deepcopy(blockset_a)
     copy_tuples_a = deepcopy(tuples_a)
-
     copy_blockset_a ^= blockset_b
     copy_tuples_a ^= tuples_b
-    assert block_set_to_tuple_set(copy_blockset_a) == copy_tuples_a
-    assert block_set_to_tuple_set(blockset_a) == tuples_a
-    assert block_set_to_tuple_set(blockset_b) == tuples_b
+    assert set(copy_blockset_a.units()) == copy_tuples_a
+    assert set(blockset_a.units()) == tuples_a
+    assert set(blockset_b.units()) == tuples_b
 
 
 def test_set_operations_on_open_intervals(d1_positives, d1_negatives, d1_all, d1_zero):

@@ -44,24 +44,6 @@ def apply_to_block_set(block_set: BlockSet, op_type: OperationType, block: Block
         block_set.toggle(block)
 
 
-def block_set_to_tuple_set(bs: BlockSet) -> set:
-    """Covert a BlockSet to a set of tuple points
-    and assert that the make-up of Blocks are disjoint
-
-    Args:
-        bs (BlockSet): A given BlockSet object
-
-    Returns:
-        set: The equivalent as a set of tuple points
-    """
-    tuple_set = set()
-    for b in bs:
-        bs = set(b)
-        assert tuple_set & bs == set()
-        tuple_set.update(bs)
-    return tuple_set
-
-
 def generate_interval_test_set_1D(n: int) -> set:
     """Generates all possible arrangements of intervals on a line
     for a given number of intervals required.

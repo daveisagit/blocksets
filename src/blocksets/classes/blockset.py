@@ -9,6 +9,7 @@ from blocksets.classes.exceptions import (
     DimensionMismatchError,
     ExpectedBlockSetError,
     InvalidDimensionsError,
+    NotFiniteError,
 )
 
 
@@ -92,6 +93,16 @@ class BlockSet:
         """
         self.normalise()
         return not bool(self._operation_stack)
+
+    @property
+    def is_finite(self) -> bool:
+        """Returns True if all blocks are finite
+
+        Returns:
+            bool: True if finite
+        """
+        self.normalise()
+        return all(blk.is_finite for blk in self)
 
     @property
     def is_normalised(self) -> bool:
@@ -513,6 +524,22 @@ class BlockSet:
                 markers.add(blk.b[d])
             markers = list(sorted(markers))
             self._marker_ordinates.append(markers)
+
+    def units(self):
+        """Generator for the unit tuples within all the blocks
+
+        Raises:
+            NotFiniteError: If any of the blocks are infinite
+
+        Yields:
+            tuple: A unit pixel
+        """
+        self.normalise()
+        if not self.is_finite:
+            raise NotFiniteError()
+        for blk in self:
+            for u in blk:
+                yield u
 
     def _refresh_marker_stack(self):
         """Refreshes _marker_stack which is equivalent to _operation_stack but

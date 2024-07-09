@@ -8,7 +8,7 @@
 Python package for performing set type operations on any layout of discrete
 space in any dimension.
 
-- **Block** is an orthogonal clump of points/pixels (_i.e. a line segment,
+- **Block** is an orthogonal clump of units/pixels (_i.e. a line segment,
 rectangle, cuboid, hyper... you get the idea_)
 
 - **BlockSet** is a set of blocks that resolves any make-up of blocks to a

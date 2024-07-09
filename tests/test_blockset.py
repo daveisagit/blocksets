@@ -1,5 +1,6 @@
 """Tests for the BlockSet class"""
 
+from math import inf
 import pytest
 
 from blocksets.classes.block import Block
@@ -7,6 +8,7 @@ from blocksets.classes.blockset import BlockSet, OperationType
 from blocksets.classes.exceptions import (
     DimensionMismatchError,
     InvalidDimensionsError,
+    NotFiniteError,
 )
 
 
@@ -56,6 +58,21 @@ def test_empty():
     assert bs.is_empty
     assert not bs
     assert len(bs) == 0
+
+
+def test_finite(d1_A):
+    bs = BlockSet()
+    assert bs.is_finite
+    bs.add(Block(5))
+    assert bs.is_finite
+    bs.add(Block(inf))
+    assert not bs.is_finite
+
+    with pytest.raises(NotFiniteError):
+        _ = set(bs.units())
+
+    bs &= d1_A
+    assert bs.is_finite
 
 
 def test_add():

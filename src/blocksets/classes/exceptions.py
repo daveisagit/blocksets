@@ -24,7 +24,9 @@ class InvalidDimensionsError(BlockError):
 
 
 class NotFiniteError(BlockError):
-    default_message = "You can not perform this operation on an infinite block."
+    default_message = (
+        "You can not perform this operation on an infinite block or blockset."
+    )
 
 
 class NotAUnitError(BlockError):

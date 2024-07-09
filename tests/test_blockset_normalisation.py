@@ -14,7 +14,7 @@ from block_data import (
     blocks_2D_arbitrary_set_example,
     blocks_3D_all_arrangements_of_2,
 )
-from util import apply_to_block_set, apply_to_tuple_set, block_set_to_tuple_set
+from util import apply_to_block_set, apply_to_tuple_set
 
 
 #
@@ -61,7 +61,7 @@ def test_normalisation_all_2_blocks_1D(test_sets, operations):
     for idx, block in enumerate(test_sets):
         apply_to_tuple_set(ts, operations[idx], block)
         apply_to_block_set(bs, operations[idx], block)
-    assert ts == block_set_to_tuple_set(bs)
+    assert ts == set(bs.units())
 
 
 # Dimensions: 1
@@ -104,7 +104,7 @@ def x_test_normalisation_all_3_blocks_1D(test_sets, operations):
     for idx, block in enumerate(test_sets):
         apply_to_tuple_set(ts, operations[idx], block)
         apply_to_block_set(bs, operations[idx], block)
-    assert ts == block_set_to_tuple_set(bs)
+    assert ts == set(bs.units())
 
 
 # Dimensions: 1
@@ -128,7 +128,7 @@ def test_normalisation_arbitrary_3_1D(test_sets, operations):
     for idx, block in enumerate(test_sets):
         apply_to_tuple_set(ts, operations[idx], block)
         apply_to_block_set(bs, operations[idx], block)
-    assert ts == block_set_to_tuple_set(bs)
+    assert ts == set(bs.units())
 
 
 def test_normalisation_on_open_intervals_1D(d1_positives, d1_negatives):
@@ -263,7 +263,7 @@ def test_normalisation_example_2D(test_sets, operations):
     for idx, block in enumerate(test_sets):
         apply_to_tuple_set(ts, operations[idx], block)
         apply_to_block_set(bs, operations[idx], block)
-    assert ts == block_set_to_tuple_set(bs)
+    assert ts == set(bs.units())
 
 
 # Dimensions: 2
@@ -288,7 +288,7 @@ def test_normalisation_all_2_blocks_2D(test_sets, operations):
         apply_to_tuple_set(ts, operations[idx], block)
         apply_to_block_set(bs, operations[idx], block)
 
-    assert ts == block_set_to_tuple_set(bs)
+    assert ts == set(bs.units())
 
 
 def test_normalisation_on_open_intervals_2D():
@@ -390,4 +390,4 @@ def test_normalisation_all_2_blocks_3D(test_sets, operations):
         apply_to_tuple_set(ts, operations[idx], block)
         apply_to_block_set(bs, operations[idx], block)
 
-    assert ts == block_set_to_tuple_set(bs)
+    assert ts == set(bs.units())
