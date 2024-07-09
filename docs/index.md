@@ -305,10 +305,10 @@ contribution guidelines
 
 ## TODO - Reminders
 
-- [ ] Test cases for normalisation using _Open_ intervals
+- [x] Test cases for normalisation using _Open_ intervals
 - [ ] Test cases for set operations using _Open_ intervals
 - [ ] Test cases for set operations in 3D
-- [ ] More systematic test case coverage for set operations
+- [x] More systematic test case coverage for set operations
 - [ ] Some performance tests on large operation stacks
 - [ ] Maybe a
   [Manim]([https://](https://docs.manim.community/en/stable/index.html)) style

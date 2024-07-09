@@ -1,6 +1,7 @@
 """Tests for the BlockSet class with a focus on normalisation"""
 
 from itertools import permutations, product
+from math import inf
 import pytest
 
 from blocksets.classes.block import Block
@@ -122,13 +123,51 @@ def x_test_normalisation_all_3_blocks_1D(test_sets, operations):
     ids=operation_ids,
 )
 def test_normalisation_arbitrary_3_1D(test_sets, operations):
-
     ts = set()
     bs = BlockSet(1)
     for idx, block in enumerate(test_sets):
         apply_to_tuple_set(ts, operations[idx], block)
         apply_to_block_set(bs, operations[idx], block)
     assert ts == block_set_to_tuple_set(bs)
+
+
+def test_normalisation_on_open_intervals_1D(d1_positives, d1_negatives):
+    all = Block(inf)
+    neg = Block(-inf, 0)
+    rmv = Block(-5, 5)
+    bs = BlockSet(1)
+    bs.add(all)
+    bs.remove(rmv)
+    assert set(bs) == {
+        ((-inf,), (-5,)),
+        ((5,), (inf,)),
+    }
+    bs.toggle(rmv)
+    assert set(bs) == {all}
+
+    d1_positives.remove(rmv)
+    assert set(d1_positives) == {
+        ((5,), (inf,)),
+    }
+
+    d1_positives.toggle(rmv)
+    assert set(d1_positives) == {
+        ((-5,), (inf,)),
+    }
+
+    d1_positives.add(neg)
+    assert set(bs) == {all}
+
+    bs.clear()
+    bs.add(all)
+    bs.toggle(all)
+    assert set(bs) == set()
+
+    bs.add(all)
+    bs.toggle(neg)
+    assert set(bs) == {
+        ((0,), (inf,)),
+    }
 
 
 #######################################################################################
@@ -250,6 +289,37 @@ def test_normalisation_all_2_blocks_2D(test_sets, operations):
         apply_to_block_set(bs, operations[idx], block)
 
     assert ts == block_set_to_tuple_set(bs)
+
+
+def test_normalisation_on_open_intervals_2D():
+    square = Block((-5, -5), (5, 5))
+    quad = Block((0, 0), (inf, inf))
+    all = Block((-inf, -inf), (inf, inf))
+    bs = BlockSet(2)
+    bs.add(square)
+    bs.remove(quad)
+    assert set(bs) == {
+        ((-5, -5), (0, 5)),
+        ((0, -5), (5, 0)),
+    }
+
+    bs.clear()
+    bs.add(square)
+    bs.toggle(all)
+    assert set(bs) == {
+        ((-inf, -inf), (-5, inf)),
+        ((-5, 5), (5, inf)),
+        ((-5, -inf), (5, -5)),
+        ((5, -inf), (inf, inf)),
+    }
+
+    bs.clear()
+    bs.add(all)
+    bs.toggle(quad)
+    assert set(bs) == {
+        ((-inf, -inf), (0, inf)),
+        ((0, -inf), (inf, 0)),
+    }
 
 
 #######################################################################################
