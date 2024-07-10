@@ -12,6 +12,11 @@ jobs:
 
     steps:
 
+    - name: Dump GitHub context
+      env:
+        GITHUB_CONTEXT: ${{ toJson(github) }}
+      run: echo "$GITHUB_CONTEXT"
+
     - uses: actions/checkout@v4
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -37,7 +42,7 @@ jobs:
   publish-to-pypi:
     name: >-
       Publish Python distribution to PyPI
-    if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
+    if: startsWith(github.ref, 'refs/tags/') # only publish to PyPI on tag pushes
     needs:
     - build
     runs-on: ubuntu-latest
