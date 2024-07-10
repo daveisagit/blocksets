@@ -303,6 +303,22 @@ contribution guidelines
 - At the moment it is early days so whilst the foundations are forming I am only
   inviting comments which can be given via [github issues]([https://](https://github.com/daveisagit/blocksets/issues))
 
+### Deployment
+
+Install `bump-my-version` and run `bump-my-version bump <version_part>` to
+
+- update the version in `pyproject.toml`
+- add a tag commit
+
+Once pushed github actions will
+
+- run test coverage
+- deploy to pypi
+
+`bump-my-version bump patch`
+`bump-my-version bump minor`
+`bump-my-version bump major`
+
 ## TODO - Reminders
 
 - [x] Test cases for normalisation using _Open_ intervals
