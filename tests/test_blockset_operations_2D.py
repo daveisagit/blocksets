@@ -9,7 +9,7 @@ from blocksets.classes.exceptions import (
     DimensionMismatchError,
     ValueParsingError,
 )
-from block_data import blocksets_2D_all_arrangements_over_2x2
+from block_data import blocksets_2D_all_arrangements_over_2x2, d2_random_blocksets
 
 
 def test_union_2D(d2_A, d2_C, d2_F, d2_empty):
@@ -155,6 +155,63 @@ def test_all_patterns_all_operations_2D(
     blockset_a: BlockSet, blockset_b: BlockSet, d2_origin
 ):
 
+    tuples_a = set(blockset_a.units())
+    tuples_b = set(blockset_b.units())
+
+    assert set((blockset_a & blockset_b).units()) == tuples_a & tuples_b
+    assert set((blockset_a | blockset_b).units()) == tuples_a | tuples_b
+    assert set((blockset_a - blockset_b).units()) == tuples_a - tuples_b
+    assert set((blockset_a ^ blockset_b).units()) == tuples_a ^ tuples_b
+
+    assert blockset_a.isdisjoint(blockset_b) == tuples_a.isdisjoint(tuples_b)
+    assert blockset_a.issubset(blockset_b) == tuples_a.issubset(tuples_b)
+    assert blockset_a.issuperset(blockset_b) == tuples_a.issuperset(tuples_b)
+
+    assert (blockset_a == blockset_b) == (tuples_a == tuples_b)
+    assert (blockset_a <= blockset_b) == (tuples_a <= tuples_b)
+    assert (blockset_a >= blockset_b) == (tuples_a >= tuples_b)
+    assert (blockset_a < blockset_b) == (tuples_a < tuples_b)
+    assert (blockset_a > blockset_b) == (tuples_a > tuples_b)
+
+    assert (d2_origin in blockset_a) == ((0, 0) in tuples_a)
+    assert blockset_a.unit_count == len(tuples_a)
+
+    copy_blockset_a = deepcopy(blockset_a)
+    copy_tuples_a = deepcopy(tuples_a)
+    copy_blockset_a &= blockset_b
+    copy_tuples_a &= tuples_b
+    assert set(copy_blockset_a.units()) == copy_tuples_a
+    assert set(blockset_a.units()) == tuples_a
+    assert set(blockset_b.units()) == tuples_b
+
+    copy_blockset_a = deepcopy(blockset_a)
+    copy_tuples_a = deepcopy(tuples_a)
+    copy_blockset_a |= blockset_b
+    copy_tuples_a |= tuples_b
+    assert set(copy_blockset_a.units()) == copy_tuples_a
+    assert set(blockset_a.units()) == tuples_a
+    assert set(blockset_b.units()) == tuples_b
+
+    copy_blockset_a = deepcopy(blockset_a)
+    copy_tuples_a = deepcopy(tuples_a)
+    copy_blockset_a -= blockset_b
+    copy_tuples_a -= tuples_b
+    assert set(copy_blockset_a.units()) == copy_tuples_a
+    assert set(blockset_a.units()) == tuples_a
+    assert set(blockset_b.units()) == tuples_b
+
+    copy_blockset_a = deepcopy(blockset_a)
+    copy_tuples_a = deepcopy(tuples_a)
+    copy_blockset_a ^= blockset_b
+    copy_tuples_a ^= tuples_b
+    assert set(copy_blockset_a.units()) == copy_tuples_a
+    assert set(blockset_a.units()) == tuples_a
+    assert set(blockset_b.units()) == tuples_b
+
+
+@pytest.mark.parametrize("blockset_a", d2_random_blocksets())
+@pytest.mark.parametrize("blockset_b", d2_random_blocksets())
+def test_random_blocks_2D(blockset_a, blockset_b, d2_origin):
     tuples_a = set(blockset_a.units())
     tuples_b = set(blockset_b.units())
 
