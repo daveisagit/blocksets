@@ -82,6 +82,15 @@ The resulting space is modelled using 6 objects (effectively tuples) instead of 
 (50000, 0, 0)..(99999, 99999, 99999)               499980000249999    
 ```
 
+## Visualisation
+
+An example of 2D set operations on some randomly generated block sets A, B and
+drawn using `matplotlib`.
+
+<img
+src="https://raw.githubusercontent.com/daveisagit/blocksets/main//assets/example_2d_set_operations.png"
+width="600" height="600" alt="2D Set Operations Example">
+
 ## Contribution
 
 At the moment it is early days so whilst the foundations are forming I am only
