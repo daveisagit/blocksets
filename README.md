@@ -89,7 +89,7 @@ drawn using `matplotlib`.
 
 <img
 src="https://raw.githubusercontent.com/daveisagit/blocksets/main//assets/example_2d_all_set_operations.png"
-width="1200" height="600" alt="2D - All Set Operations Example">
+width="1000" height="500" alt="2D - All Set Operations Example">
 
 ## Contribution
 
