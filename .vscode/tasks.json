@@ -21,5 +21,11 @@
             "command": "bump-my-version bump major",
             "problemMatcher": []
         },
+        {
+            "label": "PyPI - Clean Test",
+            "type": "shell",
+            "command": "pypi-cleanup -p blocksets -t https://test.pypi.org/ --do-it --leave-most-recent-only -u daveisagit",
+            "problemMatcher": []
+        },
     ]
 }
