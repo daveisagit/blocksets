@@ -27,5 +27,11 @@
             "command": "pypi-cleanup -p blocksets -t https://test.pypi.org/ --do-it --leave-most-recent-only -u daveisagit",
             "problemMatcher": []
         },
+        {
+            "label": "Coverage",
+            "type": "shell",
+            "command": "pytest --cov=blocksets tests/ --cov-report term-missing",
+            "problemMatcher": []
+        },
     ]
 }
