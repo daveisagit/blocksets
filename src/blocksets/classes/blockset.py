@@ -299,6 +299,10 @@ class BlockSet:
     def __xor__(self, value: object) -> Self:
         return self.symmetric_difference(value)
 
+    def __repr__(self) -> str:
+        op_stack = [(op.value, blk.norm) for op, blk in self._operation_stack]
+        return str(op_stack)
+
     def __str__(self) -> str:
         return f"BlockSet: {len(self)} Blocks, {self.measure} Points"
 

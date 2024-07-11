@@ -172,6 +172,10 @@ def test_generators():
     assert bs.is_normalised == True
 
 
+def test_repr(d1_D):
+    assert repr(d1_D) == "[('+', ((5,), (9,))), ('+', ((17,), (19,)))]"
+
+
 def test_deprecated(d2_A):
     with pytest.warns(DeprecationWarning):
         assert d2_A.unit_count == d2_A.measure
