@@ -320,14 +320,16 @@ Install `bump-my-version` and run `bump-my-version bump <version_part>` to
 - update the version in `pyproject.toml`
 - add a tag commit
 
-Once pushed github actions will
+Once pushed/sync'd, github actions will
 
-- run test coverage
+- run test coverage and upload results to codecov
 - deploy to pypi
 
-`bump-my-version bump patch`
-`bump-my-version bump minor`
-`bump-my-version bump major`
+Use the following either of
+
+- `bump-my-version bump patch`
+- `bump-my-version bump minor`
+- `bump-my-version bump major`
 
 ## TODO - Reminders
 
