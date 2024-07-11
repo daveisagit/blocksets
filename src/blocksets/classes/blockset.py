@@ -16,6 +16,8 @@ from blocksets.classes.exceptions import (
 
 
 class OperationType(Enum):
+    """Simple enumeration for add, remove and toggle operations"""
+
     ADD = "+"
     REMOVE = "-"
     TOGGLE = "~"
@@ -25,28 +27,29 @@ class BlockSet:
     """A set of Blocks which are of the same dimension.
 
     Although the class offers methods and behaviour similar to that of a set,
-    the actual construction of the set using Blocks happens via an operation stack which gets
-    resolved during a normalisation process.
+    the actual construction of the set using Blocks happens via an operation
+    stack which gets resolved during a normalisation process.
 
-    In normalized form all the resulting blocks are disjoint.
+    In normalized form all the resulting blocks are disjoint and are kept on the
+    operation stack as add operations
 
-    The normalisation process resolves overlapping and redundancy such that
-    any 2 sets of equal content (i.e. the same set of pixels) will have the same
+    The normalisation process resolves overlapping and redundancy such that any
+    2 sets of equal content (i.e. the same set of pixels) will have the same
     representation in terms of the blocks used to represent the space.
 
-    Methods and operators mirror those of the native set class
-    - Modify the content (add, remove, toggle)
-    - Compare (equality, subset, superset)
-    - Compare operations (intersection, union, difference)
+    Methods and operators mirror those of the native set class - Modify the
+    content (add, remove, toggle) - Compare (equality, subset, superset) -
+    Compare operations (intersection, union, difference)
 
-    There is some extra validation some methods to ensure
-    the supplied arguments are, or can be interpreted as a Block/BlockSet
-    and match the dimension of the current content.
+    There is some extra validation on some methods to ensure the supplied
+    arguments are, or can be interpreted as a Block/BlockSet and match the
+    dimension of the current content.
 
-    Normalisation is required and important (for accurate comparisons) but also costly.
-    We only want to perform it when its absolutely necessary and so clients are advised
-    to group together modification calls as much as possible in order to minimise the amount
-    of normalising required and especially so if performance is of a significant concern.
+    Normalisation is required and important (for accurate comparisons) but also
+    costly. We only want to perform it when its absolutely necessary and so
+    clients are advised to group together modification calls as much as possible
+    in order to minimise the amount of normalising required and especially so if
+    performance is of a significant concern.
 
     """
 
@@ -68,6 +71,111 @@ class BlockSet:
         self._dimensions = dimensions
         self._marker_ordinates = []
         self._marker_stack = []
+
+    #
+    # Representation
+    #
+
+    def __repr__(self) -> str:
+        op_stack = [(op.value, blk.norm) for op, blk in self._operation_stack]
+        return str(op_stack)
+
+    def __str__(self) -> str:
+        return f"BlockSet: {len(self)} Blocks, {self.measure} Points"
+
+    def __format__(self, format_spec) -> str:
+        return format(str(self), format_spec)
+
+    #
+    # Existence & Iteration
+    #
+
+    def __bool__(self) -> bool:
+        return not self.is_empty
+
+    def __iter__(self):
+        for blk in self._blocks():
+            yield blk
+
+    def __len__(self):
+        return len(self._operation_stack)
+
+    def __contains__(self, item) -> bool:
+        if self.dimensions is None:
+            return False
+        else:
+            item = Block.parse_to_dimension(self.dimensions, item)
+        temp_bs = BlockSet(self.dimensions)
+        temp_bs.add(item)
+        return temp_bs <= self
+
+    def units(self):
+        """Generator for the unit tuples within all the blocks
+
+        Raises:
+            NotFiniteError: If any of the blocks are infinite
+
+        Yields:
+            tuple: A unit pixel
+        """
+        self.normalise()
+        if not self.is_finite:
+            raise NotFiniteError()
+        for blk in self:
+            for u in blk:
+                yield u
+
+    #
+    # Comparisons
+    #
+
+    def __eq__(self, value: object) -> bool:
+        self._validate_operation_argument(value)
+        # leverage python set equals operation
+        value_set = set(value)
+        self_set = set(self)
+        return self_set == value_set
+
+    def __ge__(self, value: object) -> Self:
+        return self.issuperset(value)
+
+    def __gt__(self, value: object) -> Self:
+        return self.issuperset(value) and self != value
+
+    def __le__(self, value: object) -> Self:
+        return self.issubset(value)
+
+    def __lt__(self, value: object) -> Self:
+        return self.issubset(value) and self != value
+
+    #
+    # Operations
+    #
+
+    def __and__(self, value: object) -> Self:
+        return self.intersection(value)
+
+    def __iand__(self, value: object) -> Self:
+        return self.intersection_update(value)
+
+    def __or__(self, value: object) -> Self:
+        return self.union(value)
+
+    def __ior__(self, value: object) -> Self:
+        return self.update(value)
+
+    def __sub__(self, value: object) -> Self:
+        return self.difference(value)
+
+    def __xor__(self, value: object) -> Self:
+        return self.symmetric_difference(value)
+
+    def __ixor__(self, value: object) -> Self:
+        return self.symmetric_difference_update(value)
+
+    #
+    # Properties
+    #
 
     @property
     def dimensions(self) -> int:
@@ -116,6 +224,22 @@ class BlockSet:
         return self._normalised
 
     @property
+    def measure(self) -> int:
+        """Returns the total amount of space the block set is taking up.
+        This is effectively the sum of all the disjoint block measures after
+        normalisation.
+
+        Returns:
+            int: unit count = sum of disjoint block measures
+        """
+        self.normalise()
+        return sum(blk.measure for blk in self)
+
+    #
+    # Deprecated properties
+    #
+
+    @property
     def block_count(self) -> int:
         """Returns the number of block operations on the stack.
         After normalisation this is simply the number of blocks
@@ -151,17 +275,9 @@ class BlockSet:
         self.normalise()
         return sum(blk.measure for blk in self)
 
-    @property
-    def measure(self) -> int:
-        """Returns the total amount of space the block set is taking up.
-        This is effectively the sum of all the disjoint block measures after
-        normalisation.
-
-        Returns:
-            int: unit count = sum of disjoint block measures
-        """
-        self.normalise()
-        return sum(blk.measure for blk in self)
+    #
+    # Content modifiers (Block Operations)
+    #
 
     def add(self, blk: Block):
         """Append an add block operation to the stack
@@ -172,6 +288,11 @@ class BlockSet:
         blk = Block.parse_to_dimension(self.dimensions, blk)
         self._operation_stack.append((OperationType.ADD, blk))
         self._normalised = False
+
+    def clear(self):
+        """Clear the BlockSet operation stack"""
+        self._normalised = True
+        self._operation_stack = []
 
     def remove(self, blk: Block):
         """Append a remove block operation to the stack
@@ -194,10 +315,9 @@ class BlockSet:
         self._operation_stack.append((OperationType.TOGGLE, blk))
         self._normalised = False
 
-    def clear(self):
-        """Clear the BlockSet operation stack"""
-        self._normalised = True
-        self._operation_stack = []
+    #
+    # Normalisation
+    #
 
     def normalise(self):
         """Normalise the BlockSet
@@ -229,124 +349,32 @@ class BlockSet:
 
         self._normalised = True
 
-    def _blocks(self):
-        """Generator for all the disjoint blocks after normalising
+    #
+    # Set operations - implementation
+    # returning a new blockset
+    #
 
-        Yields:
-           Block: a block object
-        """
-        self.normalise()
-
-        # after normalisation we have only add operations on disjoint blocks
-        for _, blk in self._operation_stack:
-            yield blk
-
-    def __iter__(self):
-        for blk in self._blocks():
-            yield blk
-
-    def __len__(self):
-        return len(self._operation_stack)
-
-    def __bool__(self) -> bool:
-        return not self.is_empty
-
-    def __contains__(self, item) -> bool:
-        if self.dimensions is None:
-            return False
-        else:
-            item = Block.parse_to_dimension(self.dimensions, item)
-        temp_bs = BlockSet(self.dimensions)
-        temp_bs.add(item)
-        return temp_bs <= self
-
-    def __eq__(self, value: object) -> bool:
-        self._validate_operation_argument(value)
-        # leverage python set equals operation
-        value_set = set(value)
-        self_set = set(self)
-        return self_set == value_set
-
-    def __and__(self, value: object) -> Self:
-        return self.intersection(value)
-
-    def __or__(self, value: object) -> Self:
-        return self.union(value)
-
-    def __ge__(self, value: object) -> Self:
-        return self.issuperset(value)
-
-    def __gt__(self, value: object) -> Self:
-        return self.issuperset(value) and self != value
-
-    def __iand__(self, value: object) -> Self:
-        return self.intersection_update(value)
-
-    def __ior__(self, value: object) -> Self:
-        return self.update(value)
-
-    def __ixor__(self, value: object) -> Self:
-        return self.symmetric_difference_update(value)
-
-    def __le__(self, value: object) -> Self:
-        return self.issubset(value)
-
-    def __lt__(self, value: object) -> Self:
-        return self.issubset(value) and self != value
-
-    def __sub__(self, value: object) -> Self:
-        return self.difference(value)
-
-    def __xor__(self, value: object) -> Self:
-        return self.symmetric_difference(value)
-
-    def __repr__(self) -> str:
-        op_stack = [(op.value, blk.norm) for op, blk in self._operation_stack]
-        return str(op_stack)
-
-    def __str__(self) -> str:
-        return f"BlockSet: {len(self)} Blocks, {self.measure} Points"
-
-    def __format__(self, format_spec) -> str:
-        return format(str(self), format_spec)
-
-    def _validate_operation_argument(self, a):
-        """Validates the supplied argument
-
-        Args:
-            a: Expected block set
-
-        Raises:
-            ExpectedBlockSetError: If not a BlockSet object
-            DimensionMismatchError: If of different dimension
-        """
-        if not isinstance(a, BlockSet):
-            raise ExpectedBlockSetError()
-        if a.dimensions != self.dimensions:
-            raise DimensionMismatchError()
-
-    def union(self, other: Self) -> Self:
-        """Return a new block set representing a union with another
+    def difference(self, other: Self) -> Self:
+        """Return a new block set representing self - other
         There is no need to normalise self or the result as we are simply
-        adding further ADD operations. But this does mean the other block
+        adding further REMOVE operations. But this does mean the other block
         set will become normalised upon iterating over the blocks.
 
         Args:
-            other (BlockSet): The BlockSet to union with
+            other (BlockSet): The BlockSet being removed
 
         Raises:
             ExpectedBlockSetError: If not given a BlockSet for other
 
         Returns:
-            BlockSet: self ∪ other
+            BlockSet: self - other
         """
         self._validate_operation_argument(other)
-
         # we are not looking to update this block set so we take a copy
         # of self as the starting point for building the result
         result = deepcopy(self)
         for blk in other:
-            result.add(blk)
+            result.remove(blk)
         return result
 
     def intersection(self, other: Self) -> Self:
@@ -377,29 +405,6 @@ class BlockSet:
         result.normalise()
         return result
 
-    def difference(self, other: Self) -> Self:
-        """Return a new block set representing self - other
-        There is no need to normalise self or the result as we are simply
-        adding further REMOVE operations. But this does mean the other block
-        set will become normalised upon iterating over the blocks.
-
-        Args:
-            other (BlockSet): The BlockSet being removed
-
-        Raises:
-            ExpectedBlockSetError: If not given a BlockSet for other
-
-        Returns:
-            BlockSet: self - other
-        """
-        self._validate_operation_argument(other)
-        # we are not looking to update this block set so we take a copy
-        # of self as the starting point for building the result
-        result = deepcopy(self)
-        for blk in other:
-            result.remove(blk)
-        return result
-
     def symmetric_difference(self, other: Self) -> Self:
         """Return a new block set representing self ⊕ other (xor)
         We should normalise the copy of self first as we over laying
@@ -423,18 +428,50 @@ class BlockSet:
             result.toggle(blk)
         return result
 
-    def update(self, other: Self) -> Self:
-        """Update this block set with another Effectively applying the union to self
+    def union(self, other: Self) -> Self:
+        """Return a new block set representing a union with another
+        There is no need to normalise self or the result as we are simply
+        adding further ADD operations. But this does mean the other block
+        set will become normalised upon iterating over the blocks.
 
         Args:
-            other (BlockSet): The BlockSet being added
+            other (BlockSet): The BlockSet to union with
+
+        Raises:
+            ExpectedBlockSetError: If not given a BlockSet for other
+
+        Returns:
+            BlockSet: self ∪ other
+        """
+        self._validate_operation_argument(other)
+
+        # we are not looking to update this block set so we take a copy
+        # of self as the starting point for building the result
+        result = deepcopy(self)
+        for blk in other:
+            result.add(blk)
+        return result
+
+    #
+    # Set operations - implementation
+    # updating a blockset
+    #
+
+    def difference_update(self, other: Self) -> Self:
+        """Remove other from self.
+
+        Args:
+            other (BlockSet): The BlockSet being removed
+
+        Raises:
+            ExpectedBlockSetError: If not given a BlockSet for other
 
         Returns:
             BlockSet: self
         """
         self._validate_operation_argument(other)
         for blk in other:
-            self.add(blk)
+            self.remove(blk)
         return self
 
     def intersection_update(self, other: Self) -> Self:
@@ -454,23 +491,6 @@ class BlockSet:
         self._normalised = result._normalised
         return self
 
-    def difference_update(self, other: Self) -> Self:
-        """Remove other from self.
-
-        Args:
-            other (BlockSet): The BlockSet being removed
-
-        Raises:
-            ExpectedBlockSetError: If not given a BlockSet for other
-
-        Returns:
-            BlockSet: self
-        """
-        self._validate_operation_argument(other)
-        for blk in other:
-            self.remove(blk)
-        return self
-
     def symmetric_difference_update(self, other: Self) -> Self:
         """Adds the symmetric differences between self and other
 
@@ -488,6 +508,24 @@ class BlockSet:
         for blk in other:
             self.toggle(blk)
         return self
+
+    def update(self, other: Self) -> Self:
+        """Update this block set with another Effectively applying the union to self
+
+        Args:
+            other (BlockSet): The BlockSet being added
+
+        Returns:
+            BlockSet: self
+        """
+        self._validate_operation_argument(other)
+        for blk in other:
+            self.add(blk)
+        return self
+
+    #
+    # Comparisons - implementation
+    #
 
     def isdisjoint(self, other: Self) -> bool:
         """Returns True the block sets are completely disjoint from each other
@@ -543,6 +581,56 @@ class BlockSet:
         result = self | other
         return result == self
 
+    #
+    # Other
+    #
+
+    def apply_json_obj(self, json_obj):
+        """Applies layers from a json object
+
+        Args:
+            json_obj: Expecting a list of (operation, block) tuples
+        """
+        for op, n in json_obj:
+            blk = Block.parse(n)
+            if op == OperationType.ADD.value:
+                self.add(blk)
+            elif op == OperationType.REMOVE.value:
+                self.remove(blk)
+            elif op == OperationType.TOGGLE.value:
+                self.toggle(blk)
+
+    #
+    # Private
+    #
+
+    def _blocks(self):
+        """Generator for all the disjoint blocks after normalising
+
+        Yields:
+           Block: a block object
+        """
+        self.normalise()
+
+        # after normalisation we have only add operations on disjoint blocks
+        for _, blk in self._operation_stack:
+            yield blk
+
+    def _validate_operation_argument(self, a):
+        """Validates the supplied argument
+
+        Args:
+            a: Expected block set
+
+        Raises:
+            ExpectedBlockSetError: If not a BlockSet object
+            DimensionMismatchError: If of different dimension
+        """
+        if not isinstance(a, BlockSet):
+            raise ExpectedBlockSetError()
+        if a.dimensions != self.dimensions:
+            raise DimensionMismatchError()
+
     def _refresh_marker_ordinates(self):
         """Refreshes _marker_ordinates which stores actual ordinate values of
         the grid markers"""
@@ -555,22 +643,6 @@ class BlockSet:
                 markers.add(blk.b[d])
             markers = list(sorted(markers))
             self._marker_ordinates.append(markers)
-
-    def units(self):
-        """Generator for the unit tuples within all the blocks
-
-        Raises:
-            NotFiniteError: If any of the blocks are infinite
-
-        Yields:
-            tuple: A unit pixel
-        """
-        self.normalise()
-        if not self.is_finite:
-            raise NotFiniteError()
-        for blk in self:
-            for u in blk:
-                yield u
 
     def _refresh_marker_stack(self):
         """Refreshes _marker_stack which is equivalent to _operation_stack but
@@ -669,21 +741,6 @@ class BlockSet:
                 prev_normalised_x_sec = normalised_x_sec
 
         return normalised_blocks
-
-    def apply_json_obj(self, json_obj):
-        """Applies layers from a json object
-
-        Args:
-            json_obj: Expecting a list of (operation, block) tuples
-        """
-        for op, n in json_obj:
-            blk = Block.parse(n)
-            if op == OperationType.ADD.value:
-                self.add(blk)
-            elif op == OperationType.REMOVE.value:
-                self.remove(blk)
-            elif op == OperationType.TOGGLE.value:
-                self.toggle(blk)
 
 
 class BlockSetEncoder(JSONEncoder):

@@ -106,6 +106,198 @@ class Block:
         # by default create the Block from the input
         return Block(input)
 
+    #
+    # Properties
+    #
+
+    # We ensure the object is kept immutable by accessing the hidden data members via properties
+
+    @property
+    def a(self) -> tuple:
+        """Point A"""
+        return self._a
+
+    @property
+    def b(self) -> tuple:
+        """Point B"""
+        return self._b
+
+    @property
+    def dimensions(self) -> int:
+        """Property for the number of dimensions of the block
+
+        Returns:
+            int: number of dimensions
+        """
+        return len(self.a)
+
+    @property
+    def is_a_unit(self) -> bool:
+        """Property set upon creation to flag if the block is a single unit
+
+        Returns:
+            bool: True if the block a single unit in any dimension
+        """
+        return self._is_a_unit
+
+    @property
+    def is_finite(self) -> bool:
+        """Does the block have any open bounds? If so then the block is considered infinite
+
+        Returns:
+            bool: Returns True if the block is finite.
+        """
+        if any(x in (-inf, inf) for x in self.a):
+            return False
+        if any(x in (-inf, inf) for x in self.b):
+            return False
+        return True
+
+    @property
+    def manhattan(self) -> int:
+        """Property providing the manhattan distance from A -> B
+
+        Returns:
+            int: The sum of the sides
+        """
+        return sum(self.side_lengths)
+
+    @property
+    def measure(self) -> int:
+        """Property providing the length, area, volume (depending on the dimension)
+
+        Returns:
+            int: The measure (i.e. length, area, volume)
+        """
+        return prod(self.side_lengths)
+
+    @property
+    def norm(self) -> tuple:
+        """Return the block in its normalised form (A,B)
+
+        Returns:
+            tuple: (A,B)
+        """
+        return (self.a, self.b)
+
+    @property
+    def side_lengths(self) -> tuple:
+        """Property providing the side lengths
+
+        Returns:
+            tuple: The side lengths of each dimension
+        """
+        return tuple(bi - ai for ai, bi in zip(self.a, self.b))
+
+    #
+    # Comparison
+    #
+
+    def __contains__(self, item) -> bool:
+        item = self._parse_unit_block_arg(item)
+        return item <= self
+
+    def __eq__(self, value: object) -> bool:
+        value = self.parse_to_dimension(self.dimensions, value)
+        return self.norm == value.norm
+
+    def __le__(self, value: object) -> bool:
+        value = self.parse_to_dimension(self.dimensions, value)
+        i = self._intersection(value)
+        if i is not None:
+            return self.norm == i.norm
+        return False
+
+    def __lt__(self, value: object) -> bool:
+        if value == self:
+            return False
+        return self <= value
+
+    def __ge__(self, value: object) -> bool:
+        value = self.parse_to_dimension(self.dimensions, value)
+        i = self._intersection(value)
+        if i is not None:
+            return value.norm == i.norm
+        return False
+
+    def __gt__(self, value: object) -> bool:
+        if value == self:
+            return False
+        return self >= value
+
+    def __matmul__(self, other) -> bool:
+        """Make use of the @ operator as a shorthand for being in contact with"""
+        return self.in_contact_with(other)
+
+    #
+    # Intersection
+    #
+
+    def __and__(self, other) -> Self:
+        other = self.parse_to_dimension(self.dimensions, other)
+        return self._intersection(other)
+
+    #
+    # Rep & Render
+    #
+
+    def __hash__(self) -> int:
+        return hash(self.norm)
+
+    def __repr__(self) -> str:
+        return str(self.norm)
+
+    def __str__(self) -> str:
+        """Render as the coordinates of the opposite corners or the interval on a line.
+        Either as A -> B or just A if its a single unit
+        """
+        if self.is_a_unit:
+            if self.dimensions == 1:
+                return str(self.a[0])
+            return str(self.a)
+
+        if self.dimensions == 1:
+            return f"{str(self.a[0])}..{str(self.b[0])}"
+        return f"{str(self.a)}..{str(self.b)}"
+
+    def __format__(self, format_spec) -> str:
+        return format(str(self), format_spec)
+
+    #
+    # Existence and Iteration
+    #
+
+    def __bool__(self):
+        return True
+
+    def __iter__(self):
+        for t in self._units():
+            yield t
+
+    def __len__(self):
+        return self.measure
+
+    #
+    # Implementations
+    #
+
+    def in_contact_with(self, other: object) -> bool:
+        """Return True if this block touches the other in any way (vertex, edge, face etc.)
+        or overlaps it.
+
+        Args:
+            other (Block): Another Block instance for comparison
+
+        Returns:
+            bool: True if this block touches the other in any way (vertex, edge, face etc.) or overlaps it
+        """
+        other = self.parse_to_dimension(self.dimensions, other)
+        return self._in_contact_with(other)
+
+    #
+    # Private
+    #
+
     @classmethod
     def _validate_ordinate(cls, x):
         """Called by _validate_argument() for checking the validity of a tuple content
@@ -229,172 +421,8 @@ class Block:
 
         return Block(tuple(a), tuple(b))
 
-    # We ensure the object is kept immutable by accessing the hidden data members via properties
-
-    @property
-    def a(self) -> tuple:
-        """Point A"""
-        return self._a
-
-    @property
-    def b(self) -> tuple:
-        """Point B"""
-        return self._b
-
-    @property
-    def is_a_unit(self) -> bool:
-        """Property set upon creation to flag if the block is a single unit
-
-        Returns:
-            bool: True if the block a single unit in any dimension
-        """
-        return self._is_a_unit
-
-    @property
-    def dimensions(self) -> int:
-        """Property for the number of dimensions of the block
-
-        Returns:
-            int: number of dimensions
-        """
-        return len(self.a)
-
-    @property
-    def norm(self) -> tuple:
-        """Return the block in its normalised form (A,B)
-
-        Returns:
-            tuple: (A,B)
-        """
-        return (self.a, self.b)
-
-    @property
-    def is_finite(self) -> bool:
-        """Does the block have any open bounds? If so then the block is considered infinite
-
-        Returns:
-            bool: Returns True if the block is finite.
-        """
-        if any(x in (-inf, inf) for x in self.a):
-            return False
-        if any(x in (-inf, inf) for x in self.b):
-            return False
-        return True
-
-    @property
-    def side_lengths(self) -> tuple:
-        """Property providing the side lengths
-
-        Returns:
-            tuple: The side lengths of each dimension
-        """
-        return tuple(bi - ai for ai, bi in zip(self.a, self.b))
-
-    @property
-    def measure(self) -> int:
-        """Property providing the length, area, volume (depending on the dimension)
-
-        Returns:
-            int: The measure (i.e. length, area, volume)
-        """
-        return prod(self.side_lengths)
-
-    @property
-    def manhattan(self) -> int:
-        """Property providing the manhattan distance from A -> B
-
-        Returns:
-            int: The sum of the sides
-        """
-        return sum(self.side_lengths)
-
-    def __and__(self, other) -> Self:
-        other = self.parse_to_dimension(self.dimensions, other)
-        return self._intersection(other)
-
-    def __contains__(self, item) -> bool:
-        item = self._parse_unit_block_arg(item)
-        return item <= self
-
-    def __eq__(self, value: object) -> bool:
-        value = self.parse_to_dimension(self.dimensions, value)
-        return self.norm == value.norm
-
-    def __le__(self, value: object) -> bool:
-        value = self.parse_to_dimension(self.dimensions, value)
-        i = self._intersection(value)
-        if i is not None:
-            return self.norm == i.norm
-        return False
-
-    def __lt__(self, value: object) -> bool:
-        if value == self:
-            return False
-        return self <= value
-
-    def __ge__(self, value: object) -> bool:
-        value = self.parse_to_dimension(self.dimensions, value)
-        i = self._intersection(value)
-        if i is not None:
-            return value.norm == i.norm
-        return False
-
-    def __gt__(self, value: object) -> bool:
-        if value == self:
-            return False
-        return self >= value
-
-    def __hash__(self) -> int:
-        return hash(self.norm)
-
-    def __repr__(self) -> str:
-        return str(self.norm)
-
-    def __str__(self) -> str:
-        """Render as the coordinates of the opposite corners or the interval on a line.
-        Either as A -> B or just A if its a single unit
-        """
-        if self.is_a_unit:
-            if self.dimensions == 1:
-                return str(self.a[0])
-            return str(self.a)
-
-        if self.dimensions == 1:
-            return f"{str(self.a[0])}..{str(self.b[0])}"
-        return f"{str(self.a)}..{str(self.b)}"
-
-    def __format__(self, format_spec) -> str:
-        return format(str(self), format_spec)
-
-    def in_contact_with(self, other: object) -> bool:
-        """Return True if this block touches the other in any way (vertex, edge, face etc.)
-        or overlaps it.
-
-        Args:
-            other (Block): Another Block instance for comparison
-
-        Returns:
-            bool: True if this block touches the other in any way (vertex, edge, face etc.) or overlaps it
-        """
-        other = self.parse_to_dimension(self.dimensions, other)
-        return self._in_contact_with(other)
-
-    def __matmul__(self, other) -> bool:
-        """Make use of the @ operator as a shorthand for being in contact with"""
-        return self.in_contact_with(other)
-
-    def __bool__(self):
-        return True
-
-    def __iter__(self):
-        for t in self._lattice():
-            yield t
-
-    def __len__(self):
-        return self.measure
-
-    def _lattice(self):
-        """A generator for all the pixel tuples in the block
+    def _units(self):
+        """A generator for all the unit pixel tuples in the block
 
         Raises:
             NotFiniteError: if requested on an infinite block
