@@ -12,7 +12,7 @@ description = "Python package for performing set type operations on any layout o
 readme = "README.md"
 requires-python = ">=3.11"
 license = {file = "LICENSE.md"}
-keywords = ["intervals", "lattice", "sets", "pixels", "points", "dimension", "ranges", "orthogonal", "space", "grid"]
+keywords = ["blocks", "compare", "cubes", "cubiods", "dimension", "grid", "integer", "intersect", "intervals", "lattice", "orthogonal", "overlap", "normalise", "pixels", "points", "ranges", "rectangles", "sets", "space", "squares", "union", "units"]
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
