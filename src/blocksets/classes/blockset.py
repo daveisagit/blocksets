@@ -4,6 +4,7 @@ from bisect import bisect_left
 from copy import deepcopy
 from enum import Enum
 from typing import Self
+from warnings import warn
 from blocksets.classes.block import Block
 from blocksets.classes.exceptions import (
     DimensionMismatchError,
@@ -121,6 +122,12 @@ class BlockSet:
         Returns:
             int: block count
         """
+        warn(
+            "This property is deprecated in favour of len() after normalise() "
+            "and will not be available as of the first major release.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.normalise()
         return len(self._operation_stack)
 
@@ -132,6 +139,25 @@ class BlockSet:
 
         Returns:
             int: point count
+        """
+        warn(
+            "This property is deprecated in favour of measure "
+            "and will not be available as of the first major release.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+
+        self.normalise()
+        return sum(blk.measure for blk in self)
+
+    @property
+    def measure(self) -> int:
+        """Returns the total amount of space the block set is taking up.
+        This is effectively the sum of all the disjoint block measures after
+        normalisation.
+
+        Returns:
+            int: unit count = sum of disjoint block measures
         """
         self.normalise()
         return sum(blk.measure for blk in self)
@@ -274,7 +300,7 @@ class BlockSet:
         return self.symmetric_difference(value)
 
     def __str__(self) -> str:
-        return f"BlockSet: {self.block_count} Blocks, {self.unit_count} Points"
+        return f"BlockSet: {len(self)} Blocks, {self.measure} Points"
 
     def __format__(self, format_spec) -> str:
         return format(str(self), format_spec)

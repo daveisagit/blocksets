@@ -76,8 +76,8 @@ bs = BlockSet(3)
 bs.add(big_rubik)
 bs.remove(centre_cube)
 
-assert bs.unit_count == 999970000299998
-assert bs.block_count == 6
+assert bs.measure == 999970000299998
+assert len(bs) == 6
 
 sorted_blocks = sorted(bs, key=lambda x: x.norm)
 
@@ -303,7 +303,7 @@ contribution guidelines
 - At the moment it is early days so whilst the foundations are forming I am only
   inviting comments which can be given via [github issues]([https://](https://github.com/daveisagit/blocksets/issues))
 
-### Deployment
+### Deployment Notes
 
 If using VS Code make sure you have _Follow Tags When Sync_ in settings set to true.
 
@@ -325,7 +325,7 @@ Once pushed/sync'd, github actions will
 - run test coverage and upload results to codecov
 - deploy to pypi
 
-Use the following either of
+Use the following either of (which have been setup as VS Code tasks too)
 
 - `bump-my-version bump patch`
 - `bump-my-version bump minor`
@@ -341,4 +341,3 @@ Use the following either of
 - [ ] Maybe a
   [Manim]([https://](https://docs.manim.community/en/stable/index.html)) style
   video explainer?
-
