@@ -1,10 +1,11 @@
 """Tests for the BlockSet class"""
 
+import json
 from math import inf
 import pytest
 
 from blocksets.classes.block import Block
-from blocksets.classes.blockset import BlockSet, OperationType
+from blocksets.classes.blockset import BlockSet, BlockSetEncoder, OperationType
 from blocksets.classes.exceptions import (
     DimensionMismatchError,
     InvalidDimensionsError,
@@ -174,6 +175,27 @@ def test_generators():
 
 def test_repr(d1_D):
     assert repr(d1_D) == "[('+', ((5,), (9,))), ('+', ((17,), (19,)))]"
+
+
+def test_json_encoder(d1_D):
+    data = [1, 2, 3]
+    assert json.dumps(data, cls=BlockSetEncoder) == "[1, 2, 3]"
+
+    data = {"name": "d1_D", "blockset": d1_D}
+    assert (
+        json.dumps(data, cls=BlockSetEncoder)
+        == '{"name": "d1_D", "blockset": [["+", [[5], [9]]], ["+", [[17], [19]]]]}'
+    )
+
+    data = [Block(2)]
+    assert json.dumps(data, cls=BlockSetEncoder) == "[[[2], [3]]]"
+
+    data = list(OperationType)
+    assert json.dumps(data, cls=BlockSetEncoder) == '["+", "-", "~"]'
+
+    data = BlockSetEncoder
+    with pytest.raises(TypeError):
+        _ = json.dumps(data, cls=BlockSetEncoder)
 
 
 def test_deprecated(d2_A):

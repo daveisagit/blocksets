@@ -3,6 +3,7 @@
 from bisect import bisect_left
 from copy import deepcopy
 from enum import Enum
+from json import JSONEncoder
 from typing import Self
 from warnings import warn
 from blocksets.classes.block import Block
@@ -668,3 +669,21 @@ class BlockSet:
                 prev_normalised_x_sec = normalised_x_sec
 
         return normalised_blocks
+
+
+class BlockSetEncoder(JSONEncoder):
+    """Custom JSONEncoder for Blocksets
+    Usage:
+    json.dumps(data, cls=BlockSetEncoder)
+    """
+
+    def default(self, o):
+        if isinstance(o, Block):
+            return o.norm
+        if isinstance(o, BlockSet):
+            return list((op, blk.norm) for op, blk in o._operation_stack)
+        if isinstance(o, OperationType):
+            return o.value
+
+        # Let the base class default method raise the TypeError
+        return super().default(o)
