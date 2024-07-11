@@ -81,8 +81,8 @@ bs = BlockSet(3)  # Creates a 3 dimensional blockset
 bs.add(big_rubik)
 bs.remove(centre_cube)
 
-print(f"Total volume less 1 central cube: {bs.unit_count}")
-print(f"Number of Blocks: {bs.block_count}")
+print(f"Total volume less 1 central cube: {bs.measure}")
+print(f"Number of Blocks: {len(bs)}")
 print(bs)
 print("Block make-up")
 

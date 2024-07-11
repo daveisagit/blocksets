@@ -170,3 +170,11 @@ def test_generators():
     assert bs.is_normalised == False
     assert set(bs) == {blk, blk_2}
     assert bs.is_normalised == True
+
+
+def test_deprecated(d2_A):
+    with pytest.warns(DeprecationWarning):
+        assert d2_A.unit_count == d2_A.measure
+
+    with pytest.warns(DeprecationWarning):
+        assert d2_A.block_count == len(d2_A)
