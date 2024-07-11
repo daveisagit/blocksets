@@ -18,7 +18,7 @@ amount of space).
 Say we would like to model a set of pixels in a 2D grid as a union of several rectangles.
 
 <img
-src="https://raw.githubusercontent.com/daveisagit/blocksets/main/example_2d.png"
+src="https://raw.githubusercontent.com/daveisagit/blocksets/main/assets/example_2d.png"
 width="300" height="250" alt="2D example">
 
 Sure, at this scale we can simply model it as a set of point tuples to represent
