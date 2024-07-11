@@ -95,4 +95,4 @@ width="800" height="400" alt="2D - All Set Operations Example">
 
 At the moment it is early days so whilst the foundations are forming I am only
 inviting comments which can be given via [github
-issues]([https://](https://github.com/daveisagit/blocksets/issues))
+issues](https://github.com/daveisagit/blocksets/issues)
