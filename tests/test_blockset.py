@@ -198,6 +198,14 @@ def test_json_encoder(d1_D):
         _ = json.dumps(data, cls=BlockSetEncoder)
 
 
+def test_add_from_json_obj(d1_B):
+    d1_B.toggle(Block(100))
+    d1_B_json = json.dumps(d1_B, cls=BlockSetEncoder)
+    bs = BlockSet()
+    bs.apply_json_obj(json.loads(d1_B_json))
+    assert bs == d1_B
+
+
 def test_deprecated(d2_A):
     with pytest.warns(DeprecationWarning):
         assert d2_A.unit_count == d2_A.measure

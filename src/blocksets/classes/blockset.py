@@ -670,6 +670,21 @@ class BlockSet:
 
         return normalised_blocks
 
+    def apply_json_obj(self, json_obj):
+        """Applies layers from a json object
+
+        Args:
+            json_obj: Expecting a list of (operation, block) tuples
+        """
+        for op, n in json_obj:
+            blk = Block.parse(n)
+            if op == OperationType.ADD.value:
+                self.add(blk)
+            elif op == OperationType.REMOVE.value:
+                self.remove(blk)
+            elif op == OperationType.TOGGLE.value:
+                self.toggle(blk)
+
 
 class BlockSetEncoder(JSONEncoder):
     """Custom JSONEncoder for Blocksets
