@@ -88,8 +88,8 @@ An example of 2D set operations on some randomly generated block sets A, B and
 drawn using `matplotlib`.
 
 <img
-src="https://raw.githubusercontent.com/daveisagit/blocksets/main//assets/example_2d_set_operations.png"
-width="600" height="600" alt="2D Set Operations Example">
+src="https://raw.githubusercontent.com/daveisagit/blocksets/main//assets/example_2d_all_set_operations.png"
+width="800" height="400" alt="2D - All Set Operations Example">
 
 ## Contribution
 
