@@ -9,5 +9,17 @@
             "command": "bump-my-version bump patch",
             "problemMatcher": []
         },
+        {
+            "label": "Bump - Minor",
+            "type": "shell",
+            "command": "bump-my-version bump minor",
+            "problemMatcher": []
+        },
+        {
+            "label": "Bump - Major",
+            "type": "shell",
+            "command": "bump-my-version bump major",
+            "problemMatcher": []
+        },
     ]
 }
