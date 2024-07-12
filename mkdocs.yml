@@ -1,4 +1,13 @@
 site_name: blocksets
 
+nav:
+  - Home: index.md
+  - Installation and Usage: install_use.md
+  - Terminology: terminology.md
+  - Classes: classes.md
+  - Thoughts and Ideas: thoughts.md
+  - Contribution: contribution.md
+
 theme:
   name: readthedocs
+
