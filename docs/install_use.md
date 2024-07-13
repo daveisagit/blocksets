@@ -2,8 +2,8 @@
 
 ## Installation
 
-blocksets is [available on pypi.org](https://pypi.org/project/blocksets/) and can be
-installed using pip:
+blocksets is [available on pypi.org](https://pypi.org/project/blocksets/) and
+can be installed using pip:
 
 `pip install blocksets`
 
@@ -13,7 +13,12 @@ There are no dependent packages
 
 It's worth reviewing and running the `example_use.py` module via
 `python -m blocksets.example_use`
-here's a snippet for taste
+
+Essentially you create layouts by adding and subtracting blocks from the space
+which you can then treat like a set.
+
+Here is a sample of that to give you an idea of how using blocksets optimises
+the memory used to model a cube with a hole in the middle.
 
 ```python
 from blocksets import Block, BlockSet

@@ -11,38 +11,40 @@ space_ in any dimension.
 - **Block** is an orthogonal clump of units/pixels (_i.e. a line segment,
 rectangle, cuboid, hyper... you get the idea_)
 
-- **BlockSet** takes any layout of units composed in any manner and resolve it
-  to a disjoint set of blocks in a consistent fashion.
+- **BlockSet** takes a layout and resolves it to a disjoint set of **Block**s in
+  a consistent fashion, regardless of how the layout was composed.
 
 ## Why?
 
-You might choose to use a `BlockSet` instead of a regular python `set` of
-points/pixels because the resolution/granularity is sufficiently high, meaning
-the number of pixels/points being modelled due to the expanse of the space
-pushes the limits of the available computing power.
+You might choose to use a `BlockSet` instead of a `set` of tuples because the
+resolution/granularity is sufficiently high to warrant it.
+
+Or in other words, the number of pixels/points being modelled pushes the limits
+of the available computing power due to the expanse of the space they take up.
 
 ## How?
 
 - Create any layout (as a blockset) using a stacked list of block operations
-  which `add` `remove` or `toggle` blocks over the current blockset state.
-- Perform the usual set arithmetic `union` `intersection` `difference` etc. on
+  which `add`, `remove` or `toggle` blocks over the current blockset state.
+- Perform the usual set arithmetic `union`, `intersection`, `difference` etc. on
   blockset objects.
 - Compare 2 blockset objects using the standard set comparison methods and
-  operators `==` `<=` `>=`.
+  operators.
 - Results are always consistent regardless of how they were constructed.
 
 ## Installation
 
-Requires python 3.11 or higher, there are no dependencies.
+blocksets is [available on pypi.org](https://pypi.org/project/blocksets/) and
+can be installed using pip (there are no dependent packages).
 
 `pip install blocksets`
 
 ## Usage
 
-Full documentation is available (work in progress) at [readthedocs](https://blocksets.readthedocs.io/)
-
 It's worth reviewing and running the `example_use.py` module via
 `python -m blocksets.example_use`
+
+Full documentation is available at [readthedocs](https://blocksets.readthedocs.io/)
 
 ### TL;DR
 
