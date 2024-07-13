@@ -11,7 +11,7 @@ space_ in any dimension.
 - **Block** is an orthogonal clump of units/pixels (_i.e. a line segment,
 rectangle, cuboid, hyper... you get the idea_)
 
-- **BlockSet** takes any layout of units composed in any fashion and resolve it
+- **BlockSet** takes any layout of units composed in any manner and resolve it
   to a disjoint set of blocks in a consistent fashion.
 
 ## Why?
