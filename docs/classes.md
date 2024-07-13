@@ -38,12 +38,18 @@ src="https://raw.githubusercontent.com/daveisagit/blocksets/main/assets/block_3D
 width="300" height="240" alt="3D Block">
 
 ```python
+from blocksets import Block
+
 A = (5, 0, 0)
 B = (0, 4, 3)
 block = Block(A, B)
+print(block)
+
+(0, 0, 0)..(5, 4, 3)
 ```
 
-would construct a block with opposite corners defined as (0,0,0) and (5,4,3)
+The constructor normalises the block definition using opposite corners (0,0,0)
+and (5,4,3).
 
 ### Parsing & Validation
 

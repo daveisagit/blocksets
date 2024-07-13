@@ -5,14 +5,14 @@
 ![Read the Docs](https://img.shields.io/readthedocs/blocksets)
 ![Codecov](https://img.shields.io/codecov/c/github/daveisagit/blocksets)
 
-Python package for performing set type operations on any layout of discrete
-space in any dimension.
+A python package for performing set operations on layouts of _discrete
+space_ in any dimension.
 
 - **Block** is an orthogonal clump of units/pixels (_i.e. a line segment,
 rectangle, cuboid, hyper... you get the idea_)
 
-- **BlockSet** is a set of blocks that resolves any make-up of blocks to a
-  disjoint set in a consistent fashion
+- **BlockSet** takes any layout of units composed in any fashion and resolve it
+  to a disjoint set of blocks in a consistent fashion.
 
 ## Why?
 
@@ -88,7 +88,7 @@ An example of 2D set operations on some randomly generated block sets A, B and
 drawn using `matplotlib`.
 
 <img
-src="https://raw.githubusercontent.com/daveisagit/blocksets/main//assets/example_2d_all_set_operations.png"
+src="https://raw.githubusercontent.com/daveisagit/blocksets/main/assets/example_2d_all_set_operations.png"
 width="800" height="400" alt="2D - All Set Operations Example">
 
 ## Contribution
