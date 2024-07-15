@@ -70,7 +70,7 @@ import matplotlib as mpl
 
 from blocksets import Block, BlockSet
 
-grid_size = 100000
+grid_size = 100
 blocks = 100
 
 mpl.rcParams["axes.grid"] = True
