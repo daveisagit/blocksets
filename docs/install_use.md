@@ -17,44 +17,6 @@ It's worth reviewing and running the `example_use.py` module via
 Essentially you create layouts by adding and subtracting blocks from the space
 which you can then treat like a set.
 
-### Minimizing Memory Used
-
-Here is a sample of that to give you an idea of how using blocksets optimises
-the memory used to model a cube with a hole in the middle.
-
-```python
-from blocksets import Block, BlockSet
-
-big_rubik = Block((0, 0, 0), (99999, 99999, 99999))
-assert big_rubik.measure == 999970000299999
-centre_cube = Block((49999, 49999, 49999))
-assert centre_cube.measure == 1
-
-# Creates a large 3 dimensional cube with the centre missing
-bs = BlockSet(3)  
-bs.add(big_rubik)
-bs.remove(centre_cube)
-
-assert bs.measure == 999970000299998
-assert len(bs) == 6
-
-sorted_blocks = sorted(bs, key=lambda x: x.norm)
-
-for blk in sorted_blocks:
-    print(f"{blk:50} {blk.measure}")
-```
-
-printed output
-
-```text
-(0, 0, 0)..(49999, 99999, 99999)                   499980000249999
-(49999, 0, 0)..(50000, 49999, 99999)               4999850001
-(49999, 49999, 0)..(50000, 50000, 49999)           49999
-(49999, 49999, 50000)..(50000, 50000, 99999)       49999
-(49999, 50000, 0)..(50000, 99999, 99999)           4999850001
-(50000, 0, 0)..(99999, 99999, 99999)               499980000249999    
-```
-
 ### Visualize Set Operations
 
 Install matplotlib using `pip install matplotlib` and run the following.
@@ -173,3 +135,41 @@ and on a higher granularity of a 100,000 x 100,000 space
 <img
 src="https://raw.githubusercontent.com/daveisagit/blocksets/main/assets/operations_on_large_areas.png"
 width="800" height="400" alt="operations_on_large_areas.png">
+
+### Minimizing Memory Used
+
+Here is a sample from `example_use.py` to give you an idea of how using
+blocksets optimises the memory used to model a cube with a hole in the middle.
+
+```python
+from blocksets import Block, BlockSet
+
+big_rubik = Block((0, 0, 0), (99999, 99999, 99999))
+assert big_rubik.measure == 999970000299999
+centre_cube = Block((49999, 49999, 49999))
+assert centre_cube.measure == 1
+
+# Creates a large 3 dimensional cube with the centre missing
+bs = BlockSet(3)  
+bs.add(big_rubik)
+bs.remove(centre_cube)
+
+assert bs.measure == 999970000299998
+assert len(bs) == 6
+
+sorted_blocks = sorted(bs, key=lambda x: x.norm)
+
+for blk in sorted_blocks:
+    print(f"{blk:50} {blk.measure}")
+```
+
+printed output
+
+```text
+(0, 0, 0)..(49999, 99999, 99999)                   499980000249999
+(49999, 0, 0)..(50000, 49999, 99999)               4999850001
+(49999, 49999, 0)..(50000, 50000, 49999)           49999
+(49999, 49999, 50000)..(50000, 50000, 99999)       49999
+(49999, 50000, 0)..(50000, 99999, 99999)           4999850001
+(50000, 0, 0)..(99999, 99999, 99999)               499980000249999    
+```
