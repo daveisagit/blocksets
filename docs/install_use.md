@@ -32,36 +32,33 @@ import matplotlib as mpl
 
 from blocksets import Block, BlockSet
 
-grid_size = 100
-blocks = 100
+# Default values, adjust and see how they perform
+GRID_SIZE = 100
+BLOCKS = 100
 
+# Configure plots
 mpl.rcParams["axes.grid"] = True
 fig, axs = plt.subplots(2, 4, figsize=(24, 12))
-
 axs[0, 0].set_title("A")
 axs[1, 0].set_title("B")
-
 axs[0, 1].set_title("Union: A∪B")
 axs[1, 1].set_title("Union: A∪B (make-up)")
-
 axs[0, 2].set_title("Difference: A-B")
 axs[1, 2].set_title("Difference: B-A")
-
 axs[0, 3].set_title("Intersection: A∩B")
 axs[1, 3].set_title("Symmetric Difference (XOR): A⊕B")
-
-plt.setp(axs, xlim=(0, grid_size), ylim=(0, grid_size))
+plt.setp(axs, xlim=(0, GRID_SIZE), ylim=(0, GRID_SIZE))
 
 
 def random_block(min_size=5, max_size=50) -> Block:
-    """Generate a random block"""
-    min_size = int((grid_size * min_size) / 100)
-    max_size = int((grid_size * max_size) / 100)
+    """Generate a random block min/max refer to % of grid_size"""
+    min_size = int((GRID_SIZE * min_size) / 100)
+    max_size = int((GRID_SIZE * max_size) / 100)
     min_size = max(min_size, 1)
-    x = random.randint(0, grid_size - min_size)
-    y = random.randint(0, grid_size - min_size)
-    w = random.randint(min_size, min(max_size, grid_size - x))
-    h = random.randint(min_size, min(max_size, grid_size - y))
+    x = random.randint(0, GRID_SIZE - min_size)
+    y = random.randint(0, GRID_SIZE - min_size)
+    w = random.randint(min_size, min(max_size, GRID_SIZE - x))
+    h = random.randint(min_size, min(max_size, GRID_SIZE - y))
     return Block((x, y), (x + w, y + h))
 
 
@@ -73,9 +70,10 @@ def get_rect(blk: Block, color="black") -> Rectangle:
 
 
 def create_blockset():
+    """Create a blockset by randomly adding/removing blocks"""
     bs = BlockSet(2)
     add = True
-    for _ in range(blocks):
+    for _ in range(BLOCKS):
         blk = random_block()
         if add:
             bs.add(blk)
@@ -96,27 +94,30 @@ for blk in bs_A:
 for blk in bs_B:
     axs[1, 0].add_patch(get_rect(blk, "red"))
 
+# Union
 bs = bs_A | bs_B
 for blk in bs:
     axs[0, 1].add_patch(get_rect(blk, color="green"))  # union
 
-
+# Intersection
 bs = bs_A & bs_B
 for blk in bs:
     axs[1, 1].add_patch(get_rect(blk, color="purple"))  # Union make-up
     axs[0, 3].add_patch(get_rect(blk, color="purple"))  # Intersection
 
-
+# Difference A-B
 bs = bs_A - bs_B
 for blk in bs:
     axs[0, 2].add_patch(get_rect(blk, color="teal"))  # A-B
     axs[1, 1].add_patch(get_rect(blk, color="teal"))  # Union make-up
 
+# Difference B-A
 bs = bs_B - bs_A
 for blk in bs:
     axs[1, 2].add_patch(get_rect(blk, color="brown"))  # B-A
     axs[1, 1].add_patch(get_rect(blk, color="brown"))  # Union make-up
 
+# Symmetric difference
 bs = bs_A ^ bs_B
 for blk in bs:
     axs[1, 3].add_patch(get_rect(blk, color="deeppink"))
