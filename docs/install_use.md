@@ -57,7 +57,7 @@ printed output
 
 ### Visualize Set Operations
 
-Install matplotlib using `pip install matplotlib` and run the following
+Install matplotlib using `pip install matplotlib` and run the following.
 
 ```python
 """Visualise 2D set operations from 2 randomly generated blocksets"""
@@ -70,8 +70,8 @@ import matplotlib as mpl
 
 from blocksets import Block, BlockSet
 
-grid_size = 100
-blocks = 8
+grid_size = 100000
+blocks = 100
 
 mpl.rcParams["axes.grid"] = True
 fig, axs = plt.subplots(2, 4, figsize=(24, 12))
@@ -91,8 +91,11 @@ axs[1, 3].set_title("Symmetric Difference (XOR): A⊕B")
 plt.setp(axs, xlim=(0, grid_size), ylim=(0, grid_size))
 
 
-def random_block(min_size=5, max_size=70) -> Block:
+def random_block(min_size=5, max_size=50) -> Block:
     """Generate a random block"""
+    min_size = int((grid_size * min_size) / 100)
+    max_size = int((grid_size * max_size) / 100)
+    min_size = max(min_size, 1)
     x = random.randint(0, grid_size - min_size)
     y = random.randint(0, grid_size - min_size)
     w = random.randint(min_size, min(max_size, grid_size - x))
@@ -107,19 +110,29 @@ def get_rect(blk: Block, color="black") -> Rectangle:
     )
 
 
-bs_A = BlockSet(2)
-for _ in range(blocks):
-    blk = random_block()
-    bs_A.add(blk)
-    axs[0, 0].add_patch(get_rect(blk, "blue"))  # A
-bs_A.normalise()
+def create_blockset():
+    bs = BlockSet(2)
+    add = True
+    for _ in range(blocks):
+        blk = random_block()
+        if add:
+            bs.add(blk)
+            add = False
+        else:
+            bs.remove(blk)
+            add = True
+    bs.normalise()
+    return bs
 
-bs_B = BlockSet(2)
-for _ in range(blocks):
-    blk = random_block()
-    bs_B.add(blk)
-    axs[1, 0].add_patch(get_rect(blk, "red"))  # B
-bs_B.normalise()
+
+bs_A = create_blockset()
+bs_B = create_blockset()
+
+for blk in bs_A:
+    axs[0, 0].add_patch(get_rect(blk, "blue"))
+
+for blk in bs_B:
+    axs[1, 0].add_patch(get_rect(blk, "red"))
 
 bs = bs_A | bs_B
 for blk in bs:
@@ -149,8 +162,14 @@ for blk in bs:
 plt.show()
 ```
 
-For exmaple
+For example on a 100x100 space
 
 <img
 src="https://raw.githubusercontent.com/daveisagit/blocksets/main/assets/example_2d_all_set_operations.png"
-width="800" height="400" alt="2D - All Set Operations Example">
+width="800" height="400" alt="example_2d_all_set_operations.png">
+
+and on a higher granularity of a 100,000 x 100,000 space
+
+<img
+src="https://raw.githubusercontent.com/daveisagit/blocksets/main/assets/operations_on_large_areas.png"
+width="800" height="400" alt="operations_on_large_areas.png">
