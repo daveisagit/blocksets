@@ -59,4 +59,3 @@ drawn using `matplotlib`.
 <img
 src="https://raw.githubusercontent.com/daveisagit/blocksets/main/assets/example_2d_all_set_operations.png"
 width="800" height="400" alt="2D - All Set Operations Example">
-

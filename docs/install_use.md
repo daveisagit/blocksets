@@ -17,6 +17,8 @@ It's worth reviewing and running the `example_use.py` module via
 Essentially you create layouts by adding and subtracting blocks from the space
 which you can then treat like a set.
 
+### Minimizing Memory Used
+
 Here is a sample of that to give you an idea of how using blocksets optimises
 the memory used to model a cube with a hole in the middle.
 
@@ -52,3 +54,103 @@ printed output
 (49999, 50000, 0)..(50000, 99999, 99999)           4999850001
 (50000, 0, 0)..(99999, 99999, 99999)               499980000249999    
 ```
+
+### Visualize Set Operations
+
+Install matplotlib using `pip install matplotlib` and run the following
+
+```python
+"""Visualise 2D set operations from 2 randomly generated blocksets"""
+
+import random
+
+from matplotlib.patches import Rectangle
+from matplotlib import pyplot as plt
+import matplotlib as mpl
+
+from blocksets import Block, BlockSet
+
+grid_size = 100
+blocks = 8
+
+mpl.rcParams["axes.grid"] = True
+fig, axs = plt.subplots(2, 4, figsize=(24, 12))
+
+axs[0, 0].set_title("A")
+axs[1, 0].set_title("B")
+
+axs[0, 1].set_title("Union: A∪B")
+axs[1, 1].set_title("Union: A∪B (make-up)")
+
+axs[0, 2].set_title("Difference: A-B")
+axs[1, 2].set_title("Difference: B-A")
+
+axs[0, 3].set_title("Intersection: A∩B")
+axs[1, 3].set_title("Symmetric Difference (XOR): A⊕B")
+
+plt.setp(axs, xlim=(0, grid_size), ylim=(0, grid_size))
+
+
+def random_block(min_size=5, max_size=70) -> Block:
+    """Generate a random block"""
+    x = random.randint(0, grid_size - min_size)
+    y = random.randint(0, grid_size - min_size)
+    w = random.randint(min_size, min(max_size, grid_size - x))
+    h = random.randint(min_size, min(max_size, grid_size - y))
+    return Block((x, y), (x + w, y + h))
+
+
+def get_rect(blk: Block, color="black") -> Rectangle:
+    """Create matplotlib rectangle from block"""
+    return Rectangle(
+        blk.a, blk.side_lengths[0], blk.side_lengths[1], color=color, fc=color, lw=0
+    )
+
+
+bs_A = BlockSet(2)
+for _ in range(blocks):
+    blk = random_block()
+    bs_A.add(blk)
+    axs[0, 0].add_patch(get_rect(blk, "blue"))  # A
+bs_A.normalise()
+
+bs_B = BlockSet(2)
+for _ in range(blocks):
+    blk = random_block()
+    bs_B.add(blk)
+    axs[1, 0].add_patch(get_rect(blk, "red"))  # B
+bs_B.normalise()
+
+bs = bs_A | bs_B
+for blk in bs:
+    axs[0, 1].add_patch(get_rect(blk, color="green"))  # union
+
+
+bs = bs_A & bs_B
+for blk in bs:
+    axs[1, 1].add_patch(get_rect(blk, color="purple"))  # Union make-up
+    axs[0, 3].add_patch(get_rect(blk, color="purple"))  # Intersection
+
+
+bs = bs_A - bs_B
+for blk in bs:
+    axs[0, 2].add_patch(get_rect(blk, color="teal"))  # A-B
+    axs[1, 1].add_patch(get_rect(blk, color="teal"))  # Union make-up
+
+bs = bs_B - bs_A
+for blk in bs:
+    axs[1, 2].add_patch(get_rect(blk, color="brown"))  # B-A
+    axs[1, 1].add_patch(get_rect(blk, color="brown"))  # Union make-up
+
+bs = bs_A ^ bs_B
+for blk in bs:
+    axs[1, 3].add_patch(get_rect(blk, color="deeppink"))
+
+plt.show()
+```
+
+For exmaple
+
+<img
+src="https://raw.githubusercontent.com/daveisagit/blocksets/main/assets/example_2d_all_set_operations.png"
+width="800" height="400" alt="2D - All Set Operations Example">
