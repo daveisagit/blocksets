@@ -41,10 +41,10 @@ can be installed using pip (there are no dependent packages).
 
 ## Usage
 
-It's worth reviewing and running the `example_use.py` module via
-`python -m blocksets.example_use`
+Visit [readthedocs](https://blocksets.readthedocs.io/)
 
-Full documentation is available at [readthedocs](https://blocksets.readthedocs.io/)
+Review and run the `example_use.py` module via `python -m blocksets.example_use`
+for a few examples, one of which follows here.
 
 ### TL;DR
 
@@ -87,7 +87,9 @@ The resulting space is modelled using 6 objects (effectively tuples) instead of 
 ## Visualisation
 
 An example of 2D set operations on some randomly generated block sets A, B and
-drawn using `matplotlib`.
+drawn using `matplotlib`. See
+[readthedocs](https://blocksets.readthedocs.io/en/latest/install_use/#visualize-set-operations)
+for code snippet to generate this
 
 <img
 src="https://raw.githubusercontent.com/daveisagit/blocksets/main/assets/example_2d_all_set_operations.png"
