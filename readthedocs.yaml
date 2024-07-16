@@ -10,5 +10,14 @@ build:
   tools:
     python: "3.12"
 
+python:
+  install:
+    - method: pip
+      path: .
+      extra_requirements:
+        - mkdocstrings[python]
+        - mkdocs-material
+
+
 mkdocs:
   configuration: mkdocs.yml
