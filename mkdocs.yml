@@ -7,7 +7,7 @@ nav:
   - Classes: classes.md
   - Thoughts and Ideas: thoughts.md
   - Contribution: contribution.md
-  - Reference: code.md
+  - Class Reference: code.md
 
 plugins:
   - mkdocstrings:

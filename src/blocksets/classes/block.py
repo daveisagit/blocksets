@@ -15,23 +15,37 @@ from blocksets.classes.exceptions import (
 
 
 class Block:
-    """Objects are immutable (so they can be hashed for usage in sets)"""
+    """
+    A Block is an immutable orthogonal clump (a line segment, rectangle, cuboid etc.) of
+    discrete space defined by any opposite end/corner points A/B.
+    """
 
     def __init__(self, a, b=None):
-        """Create a block defined by opposite end/corners A,B
-        A,B are tuples to for the desired dimensions consisting of integer (or inf)
-        If using just 1 dimension then wrapping tuple may be omitted.
+        """A block is constructed by supplying the coordinates of the opposite ends/corners A,B
 
-        If wishing to express an open interval then make use of math.inf (or -math.inf)
-        which is equivalent to float("inf").
+        A,B are tuples in the desired dimensions consisting of integers (or
+        `inf`).
 
-        If B is not supplied then we will default it to a single unit (if there are no open intervals).
-        If there are open intervals then we reflect that in B assuming the opposite end (i.e. the multiplicative inverse)
+        If using just 1 dimension then the wrapping tuple may be omitted.
+        For example `Block(3,6)` represents the 1D units `{3, 4, 5}`
+
+        If wishing to express an open interval then make use of `math.inf` (or
+        `-math.inf`) which is equivalent to `float("inf")`.
+
+        If the opposite corner B is not supplied, then we use the ordinates from A in each
+        corresponding dimension and either
+
+        - add +1 if it's an integer, or
+        - assume the opposite end (i.e. the multiplicative inverse) if infinity.
+
+        So if all ordinates in A are `int` then we creating a unit block.
 
         Raises:
             DimensionMismatchError: If A and B are in different dimensions
-            ValueParsingError: When supplied arguments to the constructor do not meet expectation, that being integer or float("inf") or a tuple of those.
-            ZeroSpaceError: If A and B have same value in any given dimensions
+            ValueParsingError: When supplied arguments to the constructor do not
+            meet expectation, that being integer or float("inf") or a tuple of
+            those. ZeroSpaceError: If A and B have same value in any given
+            dimensions
         """
         _a = self._validate_argument(a)
 
@@ -53,36 +67,18 @@ class Block:
         self._normalise(_a, _b)
 
     @classmethod
-    def parse_to_dimension(cls, dimensions: int, input) -> Self:
-        """Parse the input to an expected dimension
-
-        Args:
-            dimension (int): The dimension of the resulting block
-            input (_type_): Anything
-
-        Raises:
-            DimensionMismatchError: If the input does not match the required dimension
-
-        Returns:
-            Self: Block
-        """
-        b = cls.parse(input)
-        if dimensions and b.dimensions != dimensions:
-            raise DimensionMismatchError()
-
-        return b
-
-    @classmethod
     def parse(cls, input) -> Self:
-        """By default use the input to create a Block, however if the input is a sequence
-        then it is either a list of arguments or a unit in some dimension.
-        Assume it's a list of arguments by default, unless
-        - The len > 2 it must be a single unit in some dimension
-        - Or, len == 1 and this only item is also a sequence we will take it to mean a unit
+        """By default the input is sent directly to the Block constructor.
+        The exception being if the input is a sequence, then either it must be
+        a list of arguments or a unit in some dimension.
+
+        We assume it's a list of arguments by default, unless
+
+        - the len > 2 in which case it must be a single unit in some dimension
+        - or, len == 1 and this only item is also a sequence we will take it to mean a unit
 
         Args:
             input: Anything
-            dimensions (int, optional): If supplied validates the dimension. Defaults to None.
 
         Returns:
             Block: The input parsed to a Block object
@@ -105,6 +101,26 @@ class Block:
 
         # by default create the Block from the input
         return Block(input)
+
+    @classmethod
+    def parse_to_dimension(cls, dimensions: int, input) -> Self:
+        """Same as parse, but with extra validation on the dimension
+
+        Args:
+            dimensions (int): The expected dimension of the resulting block
+            input (any): Anything
+
+        Raises:
+            DimensionMismatchError: If the input does not match the required dimension
+
+        Returns:
+            Self: Block
+        """
+        b = cls.parse(input)
+        if dimensions and b.dimensions != dimensions:
+            raise DimensionMismatchError()
+
+        return b
 
     #
     # Properties
@@ -226,7 +242,7 @@ class Block:
         return self >= value
 
     def __matmul__(self, other) -> bool:
-        """Make use of the @ operator as a shorthand for being in contact with"""
+        # Make use of the @ operator as a shorthand for being in contact with
         return self.in_contact_with(other)
 
     #
@@ -248,9 +264,9 @@ class Block:
         return str(self.norm)
 
     def __str__(self) -> str:
-        """Render as the coordinates of the opposite corners or the interval on a line.
-        Either as A -> B or just A if its a single unit
-        """
+        # Render as the coordinates of the opposite corners or the interval on a line.
+        # Either as A -> B or just A if its a single unit
+
         if self.is_a_unit:
             if self.dimensions == 1:
                 return str(self.a[0])
@@ -284,6 +300,8 @@ class Block:
     def in_contact_with(self, other: object) -> bool:
         """Return True if this block touches the other in any way (vertex, edge, face etc.)
         or overlaps it.
+
+        Shorthand: `A @ B`
 
         Args:
             other (Block): Another Block instance for comparison

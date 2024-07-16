@@ -51,6 +51,11 @@ class BlockSet:
     in order to minimise the amount of normalising required and especially so if
     performance is of a significant concern.
 
+    Some methods/properties will perform normalisation automatically if required.
+
+    Once constructed, Block objects can be appended to the operation stack via
+    the add, remove and toggle methods.
+
     """
 
     def __init__(self, dimensions: int | None = None) -> None:
@@ -246,6 +251,9 @@ class BlockSet:
 
         Returns:
             int: block count
+
+        **NOTE: This property is deprecated in favour of `len()` after a `normalise()`
+        and will not be available as of the first major release.**
         """
         warn(
             "This property is deprecated in favour of len() after normalise() "
@@ -264,6 +272,9 @@ class BlockSet:
 
         Returns:
             int: point count
+
+        **NOTE: This property is deprecated in favour of `measure`
+        and will not be available as of the first major release.**
         """
         warn(
             "This property is deprecated in favour of measure "
@@ -290,7 +301,7 @@ class BlockSet:
         self._normalised = False
 
     def clear(self):
-        """Clear the BlockSet operation stack"""
+        """Clear the operation stack"""
         self._normalised = True
         self._operation_stack = []
 
@@ -321,8 +332,9 @@ class BlockSet:
 
     def normalise(self):
         """Normalise the BlockSet
-        Analyse all the stacked operations and resolve to a disjoint set of add operations
-        removing redundancy
+
+        This will analyse all the operations stack and resolve it to a disjoint set of add operations
+        removing redundancy.
         """
 
         def markers_to_ordinates(marker_tuple):
@@ -355,10 +367,7 @@ class BlockSet:
     #
 
     def difference(self, other: Self) -> Self:
-        """Return a new block set representing self - other
-        There is no need to normalise self or the result as we are simply
-        adding further REMOVE operations. But this does mean the other block
-        set will become normalised upon iterating over the blocks.
+        """Return a new block set representing the difference `self - other`
 
         Args:
             other (BlockSet): The BlockSet being removed
@@ -368,7 +377,13 @@ class BlockSet:
 
         Returns:
             BlockSet: self - other
+
         """
+
+        # There is no need to normalise self or the result as we are simply
+        # adding further REMOVE operations. But this does mean the other block
+        # set will become normalised upon iterating over the blocks.
+
         self._validate_operation_argument(other)
         # we are not looking to update this block set so we take a copy
         # of self as the starting point for building the result
@@ -378,9 +393,7 @@ class BlockSet:
         return result
 
     def intersection(self, other: Self) -> Self:
-        """Return a new block set representing the intersection with another.
-        The result is achieved by taking a copy of self, removing the other
-        and then toggling the original self.
+        """Return a new block set representing the intersection with the other `self & other`.
 
         Args:
             other (BlockSet): The BlockSet to intersect with
@@ -388,6 +401,9 @@ class BlockSet:
         Returns:
             BlockSet: self ∩ other
         """
+        # The result is achieved by taking a copy of self, removing the other
+        # and then toggling the original self.
+
         self._validate_operation_argument(other)
         # we are not looking to update this block set so we take a copy
         # of self as the starting point for building the result
@@ -406,9 +422,8 @@ class BlockSet:
         return result
 
     def symmetric_difference(self, other: Self) -> Self:
-        """Return a new block set representing self ⊕ other (xor)
-        We should normalise the copy of self first as we over laying
-        further TOGGLE operations.
+        """Return a new block set representing the symmetric difference (xor) with the other
+        `self ^ other`
 
         Args:
             other (BlockSet): The BlockSet being XOR'd
@@ -419,6 +434,10 @@ class BlockSet:
         Returns:
             BlockSet: self ⊕ other
         """
+
+        # We should normalise the copy of self first as we over laying
+        # further TOGGLE operations.
+
         self._validate_operation_argument(other)
         # we are not looking to update this block set so we take a copy
         # of self as the starting point for building the result
@@ -429,10 +448,7 @@ class BlockSet:
         return result
 
     def union(self, other: Self) -> Self:
-        """Return a new block set representing a union with another
-        There is no need to normalise self or the result as we are simply
-        adding further ADD operations. But this does mean the other block
-        set will become normalised upon iterating over the blocks.
+        """Return a new block set representing a union with another `self | other`
 
         Args:
             other (BlockSet): The BlockSet to union with
@@ -443,6 +459,11 @@ class BlockSet:
         Returns:
             BlockSet: self ∪ other
         """
+
+        # There is no need to normalise self or the result as we are simply
+        # adding further ADD operations. But this does mean the other block
+        # set will become normalised upon iterating over the blocks.
+
         self._validate_operation_argument(other)
 
         # we are not looking to update this block set so we take a copy
@@ -458,7 +479,7 @@ class BlockSet:
     #
 
     def difference_update(self, other: Self) -> Self:
-        """Remove other from self.
+        """Remove space from self that is in the other.
 
         Args:
             other (BlockSet): The BlockSet being removed
@@ -475,9 +496,7 @@ class BlockSet:
         return self
 
     def intersection_update(self, other: Self) -> Self:
-        """Remove space from self not in other
-        Because of the way we do intersection it makes sense to leverage
-        the intersection method and effectively copy the resulting stack
+        """Remove space from self that is not in the other
 
         Args:
             other (BlockSet): The intersecting BlockSet
@@ -485,6 +504,10 @@ class BlockSet:
         Returns:
             BlockSet: self
         """
+
+        # Because of the way we do intersection it makes sense to leverage
+        # the intersection method and effectively copy the resulting stack
+
         self._validate_operation_argument(other)
         result = self.intersection(other)
         self._operation_stack = result._operation_stack
@@ -510,7 +533,7 @@ class BlockSet:
         return self
 
     def update(self, other: Self) -> Self:
-        """Update this block set with another Effectively applying the union to self
+        """Update this block set with another, effectively applying the union to self
 
         Args:
             other (BlockSet): The BlockSet being added
@@ -528,7 +551,7 @@ class BlockSet:
     #
 
     def isdisjoint(self, other: Self) -> bool:
-        """Returns True the block sets are completely disjoint from each other
+        """Returns `True` if the block sets are completely disjoint from each other
 
         Args:
             other (BlockSet): Compare to
@@ -548,7 +571,7 @@ class BlockSet:
         return result.is_empty
 
     def issubset(self, other: Self) -> bool:
-        """Returns True if self is a subset of other
+        """Returns `True` if self is a subset of other `self <= other`
 
         Args:
             other (BlockSet): Compare to
@@ -565,7 +588,7 @@ class BlockSet:
         return result == other
 
     def issuperset(self, other: Self) -> bool:
-        """Returns True if self is a superset of other
+        """Returns `True` if self is a superset of other `self >= other`
 
         Args:
             other (BlockSet): Compare to
@@ -587,6 +610,14 @@ class BlockSet:
 
     def apply_json_obj(self, json_obj):
         """Applies layers from a json object
+
+        We expect the json representation to be a list of pairs [operation, block].
+        Where operation is either +,-,~ and the block is a tuple pair [A,B] where A/B are
+        the coordinates of the opposite corners.
+
+        The BlockSetEncoder class can be used to create the json from the blockset
+
+        `json_str = json.dumps(blockset_object, cls=BlockSetEncoder)`
 
         Args:
             json_obj: Expecting a list of (operation, block) tuples

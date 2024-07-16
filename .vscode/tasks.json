@@ -33,5 +33,11 @@
             "command": "pytest --cov=blocksets tests/ --cov-report term-missing",
             "problemMatcher": []
         },
+        {
+            "label": "Start mkdocs server",
+            "type": "shell",
+            "command": "mkdocs serve -w src/blocksets/classes",
+            "problemMatcher": []
+        },
     ]
 }
