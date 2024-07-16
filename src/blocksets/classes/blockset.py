@@ -293,14 +293,14 @@ class BlockSet:
     # Content modifiers (Block Operations)
     #
 
-    def add(self, blk: Block):
+    def add(self, block: Block):
         """Append an add block operation to the stack
 
         Args:
-            blk (Block): A block
+            block (Block): A block
         """
-        blk = Block.parse_to_dimension(self.dimensions, blk)
-        self._operation_stack.append((OperationType.ADD, blk))
+        block = Block.parse_to_dimension(self.dimensions, block)
+        self._operation_stack.append((OperationType.ADD, block))
         self._normalised = False
 
     def clear(self):
@@ -308,25 +308,25 @@ class BlockSet:
         self._normalised = True
         self._operation_stack = []
 
-    def remove(self, blk: Block):
+    def remove(self, block: Block):
         """Append a remove block operation to the stack
 
         Args:
-            blk (Block): A block
+            block (Block): A block
         """
 
-        blk = Block.parse_to_dimension(self.dimensions, blk)
-        self._operation_stack.append((OperationType.REMOVE, blk))
+        block = Block.parse_to_dimension(self.dimensions, block)
+        self._operation_stack.append((OperationType.REMOVE, block))
         self._normalised = False
 
-    def toggle(self, blk: Block):
+    def toggle(self, block: Block):
         """Append a toggle block operation to the stack
 
         Args:
-            blk (Block): A block
+            block (Block): A block
         """
-        blk = Block.parse_to_dimension(self.dimensions, blk)
-        self._operation_stack.append((OperationType.TOGGLE, blk))
+        block = Block.parse_to_dimension(self.dimensions, block)
+        self._operation_stack.append((OperationType.TOGGLE, block))
         self._normalised = False
 
     #
