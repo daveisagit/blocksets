@@ -13,8 +13,9 @@ build:
 python:
   install:
     - method: pip
+      path: .
       extra_requirements:
-        - mkdocstrings[python]
+        - "mkdocstrings[python]"
         - mkdocs-material
 
 
