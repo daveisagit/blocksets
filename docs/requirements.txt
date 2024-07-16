@@ -1,2 +1,6 @@
-"mkdocstrings[python]"
+mkdocs
+mkdocs-autorefs
+mkdocstrings
+mkdocstrings-python 
 mkdocs-material
+mkdocs-material-extensions
