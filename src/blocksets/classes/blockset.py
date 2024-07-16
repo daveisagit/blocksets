@@ -86,7 +86,10 @@ class BlockSet:
         return str(op_stack)
 
     def __str__(self) -> str:
-        return f"BlockSet: {len(self)} Blocks, {self.measure} Points"
+        self.normalise()
+        if self.is_finite:
+            return f"BlockSet ({self.dimensions}D): {len(self)} Blocks, {self.measure} Units"
+        return f"BlockSet ({self.dimensions}D): {len(self)} Blocks - Infinite"
 
     def __format__(self, format_spec) -> str:
         return format(str(self), format_spec)

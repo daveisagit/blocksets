@@ -177,6 +177,11 @@ def test_repr(d1_D):
     assert repr(d1_D) == "[('+', ((5,), (9,))), ('+', ((17,), (19,)))]"
 
 
+def test_str(d1_D, d1_positives):
+    assert str(d1_D) == "BlockSet (1D): 2 Blocks, 6 Units"
+    assert str(d1_positives) == "BlockSet (1D): 1 Blocks - Infinite"
+
+
 def test_json_encoder(d1_D):
     data = [1, 2, 3]
     assert json.dumps(data, cls=BlockSetEncoder) == "[1, 2, 3]"
