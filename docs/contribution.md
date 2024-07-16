@@ -1,7 +1,9 @@
 # Contribution
 
+[Source on Github](https://github.com/daveisagit/blocksets)
+
 - At the moment it is early days so whilst the foundations are forming I am only
-  inviting comments which can be given via [github issues]([https://](https://github.com/daveisagit/blocksets/issues))
+  inviting comments which can be given via [github issues](https://github.com/daveisagit/blocksets/issues)
 
 ## Deployment Notes
 
