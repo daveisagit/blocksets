@@ -8,19 +8,19 @@
 A python package for performing set operations on layouts of _discrete
 space_ in any dimension.
 
-- **Block** is an orthogonal clump of units/pixels (_i.e. a line segment,
+- **Block** : an orthogonal clump of unit pixels (_i.e. a line segment,
 rectangle, cuboid, hyper... you get the idea_)
 
-- **BlockSet** takes a layout and resolves it to a disjoint set of **Block**s in
-  a consistent fashion, regardless of how the layout was composed.
+- **BlockSet** : takes a composition of the space and resolves it into a
+  disjoint set of **Block**s in a consistent fashion.
 
 ## Why?
 
 You might choose to use a `BlockSet` instead of a `set` of tuples because the
 resolution/granularity is sufficiently high to warrant it.
 
-Or in other words, the number of pixels/points being modelled pushes the limits
-of the available computing power due to the expanse of the space they take up.
+Or in other words, the number of units being modelled pushes the limits of the
+available computing power due to the expanse of the space they take up.
 
 ## How?
 
@@ -87,9 +87,11 @@ The resulting space is modelled using 6 objects (effectively tuples) instead of 
 ## Visualisation
 
 An example of 2D set operations on some randomly generated block sets A, B and
-drawn using `matplotlib`. See
+drawn using `matplotlib`.
+
+See
 [readthedocs](https://blocksets.readthedocs.io/en/latest/install_use/#visualize-set-operations)
-for code snippet to generate this
+for the code snippet to generate this.
 
 <img
 src="https://raw.githubusercontent.com/daveisagit/blocksets/main/assets/example_2d_all_set_operations.png"
