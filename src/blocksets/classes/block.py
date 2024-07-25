@@ -42,10 +42,10 @@ class Block:
 
         Raises:
             DimensionMismatchError: If A and B are in different dimensions
-            ValueParsingError: When supplied arguments to the constructor do not
-            meet expectation, that being integer or float("inf") or a tuple of
-            those. ZeroSpaceError: If A and B have same value in any given
-            dimensions
+
+            ValueParsingError: When supplied arguments to the constructor do not meet expectation, that being integer or float("inf") or a tuple of those.
+
+            ZeroSpaceError: If A and B have same value in any given dimensions
         """
         _a = self._validate_argument(a)
 
